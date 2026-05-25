@@ -33,8 +33,14 @@ jobs:
             -o data/mega.json
           ls -la data/
 
+      - name: Install Pillow (for icon-sheet slicing)
+        run: pip install Pillow
+
       - name: Build sprite packs
         run: python3 build_packs.py
+
+      - name: Build box-icon pack
+        run: python3 build_icons.py
 
       - name: Show pack sizes
         run: |
@@ -50,6 +56,6 @@ jobs:
           # what damage-calc's import URL points at.
           gh release delete latest --yes --cleanup-tag 2>/dev/null || true
           gh release create latest \
-            packs/bw.zip packs/dex.zip \
+            packs/bw.zip packs/dex.zip packs/icons.zip \
             --title "Latest sprite packs ($(date -u +%Y-%m-%d))" \
-            --notes "Auto-built from play.pokemonshowdown.com/sprites/ on $(date -u +'%Y-%m-%d %H:%M UTC'). bw.zip is scoped to gen1-5 species + their gen1-5-era formes so it only contains art derived from the original Game Freak BW games (no X/Y Sprite Project community extensions until that group's permission lands). dex.zip mirrors the full HOME 3D set. Animated (ani) pack intentionally not published yet — same community-attribution reason. See the repo's README.md for the credit and licensing context."
+            --notes "Auto-built from play.pokemonshowdown.com/sprites/ on $(date -u +'%Y-%m-%d %H:%M UTC'). bw.zip is scoped to gen1-5 species + their gen1-5-era formes so it only contains art derived from the original Game Freak BW games (no X/Y Sprite Project community extensions until that group's permission lands). dex.zip mirrors the full HOME 3D set. icons.zip is sliced from Showdown's pokemonicons-sheet.png (Game Freak box-UI art, all generations). Animated (ani) pack intentionally not published yet — same community-attribution reason for that one as bw's exclusions. See the repo's README.md for the credit and licensing context."
