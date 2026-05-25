@@ -107,14 +107,29 @@ def parse_icon_indexes(ts_source: str) -> dict[str, int]:
 
 
 def parse_pokedex_nums(js_source: str) -> dict[str, int]:
-    """Pull the `num` field for each species from Showdown's
+    """Pull the `num` field for each *base* species from Showdown's
     pokedex.js. Entries look like:
-        pikachu:{num:25,name:"Pikachu",...}
-        venusaurmega:{num:3,name:"Venusaur-Mega",...}
-    so a focused regex pulls (key, num) pairs."""
+        pikachu:{num:25,name:"Pikachu",types:[...]}
+        venusaurmega:{num:3,name:"Venusaur-Mega",baseSpecies:"Venusaur",forme:"Mega",...}
+    Form entries (those with a baseSpecies field) inherit their
+    base's num and would just duplicate the base species' icon if
+    we included them — Showdown's icon sheet for the form key
+    points to the base position. We skip them here so the pack
+    contains one icon per base species, and the app's
+    base-species fallback chain shows the base icon for any form
+    request."""
     out: dict[str, int] = {}
-    for m in re.finditer(r'(\w+):\{num:(-?\d+),', js_source):
-        out[m.group(1)] = int(m.group(2))
+    # Match the full entry up to its closing brace so we can detect
+    # baseSpecies inside it. Use a non-greedy match bounded by the
+    # next `,name:` (which always opens a new entry) to avoid
+    # crossing entry boundaries.
+    for m in re.finditer(
+            r'(\w+):\{num:(-?\d+),(.*?)(?=\}\,\w+:\{num:|\}\;?$)',
+            js_source):
+        key, num, body = m.group(1), int(m.group(2)), m.group(3)
+        if 'baseSpecies:' in body:
+            continue  # form, would duplicate base
+        out[key] = num
     return out
 
 
