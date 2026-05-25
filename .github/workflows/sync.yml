@@ -1,0 +1,55 @@
+name: Build sprite packs
+
+on:
+  # Nightly catch-up for Showdown CDN additions (new Pokémon, new
+  # community art for Z-A Megas, etc.).
+  schedule:
+    - cron: '17 4 * * *'  # 04:17 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch Pokémon list from damage-calc main
+        run: |
+          mkdir -p data
+          for gen in 1 2 3 4 5 6 7 8 9; do
+            curl -sSL "https://raw.githubusercontent.com/Lerisia/damage-calc/main/assets/pokemon/gen${gen}.json" \
+              -o "data/gen${gen}.json"
+          done
+          curl -sSL "https://raw.githubusercontent.com/Lerisia/damage-calc/main/assets/pokemon/forms.json" \
+            -o data/forms.json
+          curl -sSL "https://raw.githubusercontent.com/Lerisia/damage-calc/main/assets/pokemon/mega.json" \
+            -o data/mega.json
+          ls -la data/
+
+      - name: Build sprite packs
+        run: python3 build_packs.py
+
+      - name: Show pack sizes
+        run: |
+          ls -lh packs/
+
+      - name: Re-create 'latest' release with the three packs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          # Delete previous release + tag so the new one's assets and
+          # build date are clearly the current set. The 'latest' tag is
+          # what damage-calc's import URL points at.
+          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+          gh release create latest \
+            packs/bw.zip packs/ani.zip packs/dex.zip \
+            --title "Latest sprite packs ($(date -u +%Y-%m-%d))" \
+            --notes "Auto-built from play.pokemonshowdown.com/sprites/ on $(date -u +'%Y-%m-%d %H:%M UTC'). Pack contents are mirrored sprite files only; see the repo's README.md for the credit and licensing context."
