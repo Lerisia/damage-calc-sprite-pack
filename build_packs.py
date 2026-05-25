@@ -207,6 +207,12 @@ def collect_names_gen15() -> set[str]:
         # Skip post-gen5 regional variants outright.
         if any(n.startswith(p + ' ') for p in REGIONAL.keys()):
             continue
+        # Skip Primal Groudon/Kyogre — Primal Reversion was added in
+        # ORAS (gen6), so the BW sprite is X/Y Sprite Project work,
+        # not original BW art. (Mega works the same way, but Megas
+        # live in mega.json which we never load for this scope.)
+        if n.startswith('Primal '):
+            continue
         base = base_species_name(n)
         if base is not None and base in base_species:
             names.add(n)
