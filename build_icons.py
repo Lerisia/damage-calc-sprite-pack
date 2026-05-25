@@ -1,0 +1,197 @@
+#!/usr/bin/env python3
+"""Slice Showdown's pokemonicons-sheet.png into individual 40×30 PNGs.
+
+Showdown serves the gen7-style box icons as a single 12-column
+sprite sheet, with each Pokémon assigned an icon index. The index
+is `BattlePokedex[id].num` for base species, overridden by
+`BattlePokemonIconIndexes[id]` for forms that have their own icon
+(Pikachu cosplay variants, Unown letters, Mega forms, etc.).
+
+This script:
+  1. Pulls pokemonicons-sheet.png from Showdown's CDN.
+  2. Pulls battle-dex-data.ts (source of BattlePokemonIconIndexes)
+     and pokedex.js (source of base .num) from the showdown-client
+     repo / CDN.
+  3. Walks damage-calc's Pokémon list, computes each entry's icon
+     index via the same lookup, crops 40×30 at (idx % 12 * 40,
+     idx // 12 * 30), and writes the crop as <key>.png using our
+     app's spriteKeyFor naming.
+  4. Bundles all crops into packs/icons.zip alongside bw/dex packs.
+
+The box icons are direct rips of Game Freak's box-UI art (gen7+),
+same provenance class as dex.zip's HOME 3D models — no Smogon
+Sprite Project / X/Y Project community involvement, so the pack
+covers all Pokémon (no gen1-5 scope restriction)."""
+from __future__ import annotations
+
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+from PIL import Image
+
+# Re-use the same spriteKey + naming logic as build_packs.py.
+sys.path.insert(0, str(Path(__file__).parent))
+from build_packs import sprite_key, collect_names_all  # noqa: E402
+
+DATA_DIR = Path('data')
+PACKS_DIR = Path('packs')
+WORK_DIR = Path('work')
+SHEET_URL = 'https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png'
+DEX_DATA_URL = ('https://raw.githubusercontent.com/smogon/'
+                'pokemon-showdown-client/master/'
+                'play.pokemonshowdown.com/src/battle-dex-data.ts')
+POKEDEX_URL = 'https://play.pokemonshowdown.com/data/pokedex.js'
+
+ICON_W = 40
+ICON_H = 30
+COLS = 12
+
+
+def fetch(url: str) -> bytes:
+    r = subprocess.run(
+        ['curl', '-sSL', '--max-time', '60', url],
+        capture_output=True, check=True,
+    )
+    return r.stdout
+
+
+def to_id(name: str) -> str:
+    """Mirrors Showdown's toID() — lowercase + strip non-alphanumeric.
+    This is how Showdown keys both BattlePokedex and
+    BattlePokemonIconIndexes. We use it to look up the icon index
+    from the Pokémon's English name."""
+    return re.sub(r'[^a-z0-9]', '',
+                  name.replace('♀', 'f').replace('♂', 'm').lower())
+
+
+def parse_icon_indexes(ts_source: str) -> dict[str, int]:
+    """Pull BattlePokemonIconIndexes (and the Left variant we don't
+    need) out of the TS source. Entries look like:
+        pikachubelle: 1032 + 2,
+        venusaurmega: 1500,
+        cresceidonmega: 1532 + 5,
+    so we tokenise on commas inside the object body and parse each."""
+    m = re.search(
+        r'BattlePokemonIconIndexes:\s*\{[^}]*?\}\s*=\s*\{(.*?)\n\}\s*;',
+        ts_source, flags=re.DOTALL,
+    )
+    if not m:
+        # Fallback: looser regex without the type annotation.
+        m = re.search(
+            r'BattlePokemonIconIndexes[^=]*=\s*\{(.*?)\n\}\s*;',
+            ts_source, flags=re.DOTALL,
+        )
+    if not m:
+        raise RuntimeError('BattlePokemonIconIndexes not found in source')
+    body = m.group(1)
+    out: dict[str, int] = {}
+    # Strip JS-style // comments before parsing entries.
+    body_no_comments = re.sub(r'//[^\n]*', '', body)
+    for entry in re.finditer(
+            r'(\w+)\s*:\s*([\d+\- *()]+?)\s*,', body_no_comments):
+        key = entry.group(1)
+        expr = entry.group(2).strip()
+        try:
+            # Entries are simple arithmetic like '1032 + 7'. eval is
+            # safe here because we restrict the expression alphabet
+            # via the regex above (digits/operators only).
+            value = eval(expr, {'__builtins__': {}}, {})
+            out[key] = int(value)
+        except Exception:
+            continue
+    return out
+
+
+def parse_pokedex_nums(js_source: str) -> dict[str, int]:
+    """Pull the `num` field for each species from Showdown's
+    pokedex.js. Entries look like:
+        pikachu:{num:25,name:"Pikachu",...}
+        venusaurmega:{num:3,name:"Venusaur-Mega",...}
+    so a focused regex pulls (key, num) pairs."""
+    out: dict[str, int] = {}
+    for m in re.finditer(r'(\w+):\{num:(-?\d+),', js_source):
+        out[m.group(1)] = int(m.group(2))
+    return out
+
+
+def icon_index(name: str, overrides: dict[str, int],
+               pokedex: dict[str, int]) -> int | None:
+    """Resolve a Pokémon's icon index using the same lookup chain as
+    Showdown's getPokemonIconNum: overrides first, base .num
+    otherwise. Returns None when we can't find the species at all
+    (Champions-original Megas Showdown doesn't know about, etc.)."""
+    sid = to_id(name)
+    if sid in overrides:
+        return overrides[sid]
+    if sid in pokedex:
+        num = pokedex[sid]
+        if 0 <= num <= 1025:
+            return num
+    return None
+
+
+def main() -> int:
+    print('Fetching pokemonicons-sheet.png...')
+    sheet_bytes = fetch(SHEET_URL)
+    print(f'  {len(sheet_bytes)} bytes')
+    sheet_path = WORK_DIR / 'pokemonicons-sheet.png'
+    WORK_DIR.mkdir(exist_ok=True)
+    sheet_path.write_bytes(sheet_bytes)
+    sheet = Image.open(sheet_path).convert('RGBA')
+    print(f'  sheet dimensions: {sheet.width}×{sheet.height}')
+
+    print('Fetching battle-dex-data.ts...')
+    dex_ts = fetch(DEX_DATA_URL).decode('utf-8', errors='replace')
+    overrides = parse_icon_indexes(dex_ts)
+    print(f'  override entries: {len(overrides)}')
+
+    print('Fetching pokedex.js...')
+    pokedex_js = fetch(POKEDEX_URL).decode('utf-8', errors='replace')
+    pokedex_nums = parse_pokedex_nums(pokedex_js)
+    print(f'  pokedex entries: {len(pokedex_nums)}')
+
+    out_dir = WORK_DIR / 'icons'
+    if out_dir.exists():
+        for f in out_dir.iterdir():
+            f.unlink()
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    names = sorted(collect_names_all())
+    print(f'\nSlicing icons for {len(names)} Pokémon names...')
+    ok, miss = 0, []
+    for name in names:
+        idx = icon_index(name, overrides, pokedex_nums)
+        if idx is None:
+            miss.append(name)
+            continue
+        col, row = idx % COLS, idx // COLS
+        x0, y0 = col * ICON_W, row * ICON_H
+        if y0 + ICON_H > sheet.height or x0 + ICON_W > sheet.width:
+            miss.append(name)
+            continue
+        crop = sheet.crop((x0, y0, x0 + ICON_W, y0 + ICON_H))
+        key = sprite_key(name)
+        crop.save(out_dir / f'{key}.png', 'PNG', optimize=True)
+        ok += 1
+    print(f'  sliced: {ok} / {len(names)}')
+    if miss:
+        print(f'  missing icon index (will fall back to pokéball): '
+              f'{len(miss)}')
+        for n in miss[:10]:
+            print(f'    - {n}')
+
+    # ZIP the icons folder. shutil.make_archive matches build_packs.py.
+    import shutil
+    PACKS_DIR.mkdir(exist_ok=True)
+    zip_base = PACKS_DIR / 'icons'
+    shutil.make_archive(str(zip_base), 'zip', root_dir=out_dir)
+    zip_path = zip_base.with_suffix('.zip')
+    print(f'\nicons.zip: {zip_path.stat().st_size / 1024:.1f} KB')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
