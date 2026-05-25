@@ -28,11 +28,26 @@ DATA_DIR = Path('data')
 PACKS_DIR = Path('packs')
 WORK_DIR = Path('work')
 
-# (style key, Showdown CDN subdir, file extension)
+# (style key, Showdown CDN subdir, file extension, scope)
+#
+# 'scope' decides which Pokémon names get fetched for that style:
+#  * 'all'   — every entry in damage-calc's pokedex (~1239 sprites).
+#  * 'gen15' — gen1-5 base species + forms whose base is gen1-5. This
+#              limits us to Pokémon that had real BW sprites in the
+#              original Gen-5 games, plus their official formes; it
+#              excludes all gen6+ species, all Megas (a gen6 mechanic,
+#              and the BW-style art is the X/Y Sprite Project's
+#              community work), and all post-gen5 regional variants
+#              (Alolan/Galarian/Hisuian/Paldean — also X/Y Project
+#              community work). We avoid redistributing X/Y Sprite
+#              Project content until Layell explicitly OKs it.
+#
+# 'ani' is intentionally omitted from this list — the animated GIFs
+# for gen6+ are also community-extension work whose provenance we
+# can't separate cleanly, so we don't ship that pack at all yet.
 STYLES = [
-    ('bw',  'gen5', 'png'),
-    ('ani', 'ani',  'gif'),
-    ('dex', 'dex',  'png'),
+    ('bw',  'gen5', 'png', 'gen15'),
+    ('dex', 'dex',  'png', 'all'),
 ]
 
 # Per-name overrides — same set as the Dart side. Discovered
@@ -122,12 +137,46 @@ def sprite_key(name: str) -> str:
     return _strip_alnum(n)
 
 
-def collect_names() -> set[str]:
+def collect_names_all() -> set[str]:
+    """Every Pokémon name in the dex — used for 'all'-scope styles."""
     names: set[str] = set()
     for p in sorted(DATA_DIR.glob('*.json')):
         for entry in json.loads(p.read_text(encoding='utf-8')):
             n = entry.get('name')
             if n:
+                names.add(n)
+    return names
+
+
+def collect_names_gen15() -> set[str]:
+    """gen1-5 base species + forms whose base species is in gen1-5.
+
+    Used for BW pack scope. Forms get included only when their base
+    species exists in gen[1-5].json — that pulls in Deoxys formes,
+    Wormadam cloaks, Rotom appliances, Therian trio, Black/White
+    Kyurem, Darmanitan-Zen, Meloetta-Pirouette, etc., while
+    excluding regional variants of gen1-5 species (which are gen7+
+    community drawings, not original BW art)."""
+    base_species: set[str] = set()
+    for g in (1, 2, 3, 4, 5):
+        for entry in json.loads(
+                (DATA_DIR / f'gen{g}.json').read_text(encoding='utf-8')):
+            n = entry.get('name')
+            if n:
+                base_species.add(n)
+    names: set[str] = set(base_species)
+    forms_path = DATA_DIR / 'forms.json'
+    if forms_path.exists():
+        for entry in json.loads(forms_path.read_text(encoding='utf-8')):
+            n = entry.get('name')
+            if not n:
+                continue
+            # Skip post-gen5 regional variants (Alolan/Galarian/...).
+            if any(n.startswith(p + ' ')
+                   for p in ('Alolan', 'Galarian', 'Hisuian', 'Paldean')):
+                continue
+            base = n.split(' (')[0].strip()
+            if base in base_species:
                 names.add(n)
     return names
 
@@ -186,14 +235,17 @@ def zip_style(style_key: str) -> Path:
 
 
 def main() -> int:
-    names = collect_names()
-    print(f'Distinct Pokémon names: {len(names)}')
-    names_sorted = sorted(names)
-    for style_key, sd_dir, ext in STYLES:
-        print(f'\n== {style_key} ({sd_dir}/*.{ext}) ==')
-        n_ok = build_style(style_key, sd_dir, ext, names_sorted)
+    all_names = sorted(collect_names_all())
+    gen15_names = sorted(collect_names_gen15())
+    print(f'All Pokémon names: {len(all_names)}')
+    print(f'Gen 1-5 scope: {len(gen15_names)}')
+    for style_key, sd_dir, ext, scope in STYLES:
+        names = gen15_names if scope == 'gen15' else all_names
+        print(f'\n== {style_key} ({sd_dir}/*.{ext}, scope={scope}, '
+              f'targets={len(names)}) ==')
+        n_ok = build_style(style_key, sd_dir, ext, names)
         z = zip_style(style_key)
-        print(f'  fetched: {n_ok} / {len(names_sorted)}')
+        print(f'  fetched: {n_ok} / {len(names)}')
         print(f'  packed: {z} ({z.stat().st_size / 1024 / 1024:.1f} MB)')
     return 0
 

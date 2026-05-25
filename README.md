@@ -1,12 +1,12 @@
 # damage-calc-sprite-pack
 
-Pre-built Pokémon sprite packs for [damage-calc.com](https://damage-calc.com)'s mobile app to import. Three style packs published as GitHub Release assets:
+Pre-built Pokémon sprite packs for [damage-calc.com](https://damage-calc.com)'s mobile app to import. Published as GitHub Release assets under the `latest` tag:
 
-- **bw.zip** — Black/White pixel sprites (gen5 style, community-extended to all generations by the Smogon Sprite Project)
-- **ani.zip** — Animated GIF sprites
-- **dex.zip** — HOME 3D PNG sprites
+- **bw.zip** — Black/White pixel sprites, scoped to **gen 1–5 base species and gen1-5-era formes only**. Excludes all Megas (a gen6+ mechanic), all post-gen5 regional variants (Alolan/Galarian/Hisuian/Paldean), and all gen6+ species. This boundary keeps the pack to sprites derived from the original Game Freak BW games until the [X/Y Sprite Project](https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/) (which extended BW-style art to post-gen5 Pokémon) explicitly OKs redistribution.
+- **dex.zip** — HOME 3D PNG sprites, full Pokémon coverage.
+- ~~ani.zip~~ — Animated GIF pack is intentionally not published yet, same community-attribution reason as bw's exclusions.
 
-A scheduled GitHub Actions workflow mirrors the latest sprites from `play.pokemonshowdown.com/sprites/` and re-publishes them as a single release. Pack sizes are ~3 MB for bw/dex, ~25 MB for ani.
+A scheduled GitHub Actions workflow mirrors the latest sprites from `play.pokemonshowdown.com/sprites/` and re-publishes them as a single release. Pack sizes: bw ~1 MB, dex ~3 MB.
 
 ## How the mobile app uses these
 
