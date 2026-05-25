@@ -148,15 +148,47 @@ def collect_names_all() -> set[str]:
     return names
 
 
+def base_species_name(name: str) -> Optional[str]:
+    """Strip form qualifiers to reveal the underlying species — mirror
+    of the Dart baseSpeciesName in sprite_service.dart. Used to decide
+    whether a forms.json entry belongs in the gen1-5 BW scope by
+    looking up the underlying species against gen[1-5].json."""
+    n = name.strip()
+    m = re.fullmatch(r'Mega (\w+) [XYZ]', n)
+    if m: return m.group(1)
+    m = re.fullmatch(r'Mega (\w+)', n)
+    if m: return m.group(1)
+    m = re.fullmatch(r'Primal (\w+)', n)
+    if m: return m.group(1)
+    if n == 'Ultra Necrozma': return 'Necrozma'
+    if n == 'Hoopa Unbound': return 'Hoopa'
+    if n in ('Black Kyurem', 'White Kyurem'): return 'Kyurem'
+    if n in ('Dawn Wings Necrozma', 'Dusk Mane Necrozma'): return 'Necrozma'
+    if n in ('Ice Rider Calyrex', 'Shadow Rider Calyrex'): return 'Calyrex'
+    m = re.fullmatch(r'(Heat|Wash|Frost|Fan|Mow) Rotom', n)
+    if m: return 'Rotom'
+    for prefix in REGIONAL.keys():
+        if n.startswith(prefix + ' '):
+            rest = n[len(prefix) + 1:]
+            nested = re.fullmatch(r'(\w+) \(', rest)
+            return nested.group(1) if nested else rest
+    m = re.fullmatch(r"([\w\.\-' ]+?) \([^)]+\)", n)
+    if m: return m.group(1).strip()
+    return None
+
+
 def collect_names_gen15() -> set[str]:
     """gen1-5 base species + forms whose base species is in gen1-5.
 
-    Used for BW pack scope. Forms get included only when their base
-    species exists in gen[1-5].json — that pulls in Deoxys formes,
-    Wormadam cloaks, Rotom appliances, Therian trio, Black/White
-    Kyurem, Darmanitan-Zen, Meloetta-Pirouette, etc., while
-    excluding regional variants of gen1-5 species (which are gen7+
-    community drawings, not original BW art)."""
+    Forms whose underlying species (per [base_species_name]) is a
+    gen1-5 Pokémon get included — Deoxys formes (gen3 Deoxys), Rotom
+    appliances (gen4 Rotom), Wormadam cloaks (gen4 Wormadam),
+    Black/White Kyurem (gen5 Kyurem), Therian trio (gen5),
+    Darmanitan-Zen (gen5), Meloetta-Pirouette (gen5), etc.
+
+    Excludes post-gen5 regional variants and all Megas (the BW
+    sprites for these are X/Y Sprite Project community work and
+    aren't in scope until that group OKs redistribution)."""
     base_species: set[str] = set()
     for g in (1, 2, 3, 4, 5):
         for entry in json.loads(
@@ -166,18 +198,18 @@ def collect_names_gen15() -> set[str]:
                 base_species.add(n)
     names: set[str] = set(base_species)
     forms_path = DATA_DIR / 'forms.json'
-    if forms_path.exists():
-        for entry in json.loads(forms_path.read_text(encoding='utf-8')):
-            n = entry.get('name')
-            if not n:
-                continue
-            # Skip post-gen5 regional variants (Alolan/Galarian/...).
-            if any(n.startswith(p + ' ')
-                   for p in ('Alolan', 'Galarian', 'Hisuian', 'Paldean')):
-                continue
-            base = n.split(' (')[0].strip()
-            if base in base_species:
-                names.add(n)
+    if not forms_path.exists():
+        return names
+    for entry in json.loads(forms_path.read_text(encoding='utf-8')):
+        n = entry.get('name')
+        if not n:
+            continue
+        # Skip post-gen5 regional variants outright.
+        if any(n.startswith(p + ' ') for p in REGIONAL.keys()):
+            continue
+        base = base_species_name(n)
+        if base is not None and base in base_species:
+            names.add(n)
     return names
 
 
