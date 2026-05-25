@@ -263,12 +263,27 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
 
 
 def zip_style(style_key: str) -> Path:
+    """ZIP the style's sprite files at the top level, and nest the
+    box-icon files under an `icons/` subdirectory if work/icons/ is
+    populated (build_icons.py runs before build_packs.py in the
+    workflow). Bundling icons into every style pack means the user
+    only manages one download per style — the app's import flow
+    extracts both groups in one go and the user never has to think
+    about box icons as a separate asset."""
+    import zipfile
     src = WORK_DIR / style_key
+    icons_src = WORK_DIR / 'icons'
     dst = PACKS_DIR / f'{style_key}.zip'
     PACKS_DIR.mkdir(exist_ok=True)
-    # store=0/deflate=8 — sprites are already PNG/GIF compressed, so
-    # the deflate gain is small; default level keeps build time short.
-    shutil.make_archive(str(dst.with_suffix('')), 'zip', root_dir=src)
+    with zipfile.ZipFile(dst, 'w', zipfile.ZIP_DEFLATED,
+                         compresslevel=6) as zf:
+        for f in sorted(src.iterdir()):
+            if f.is_file():
+                zf.write(f, arcname=f.name)
+        if icons_src.exists():
+            for f in sorted(icons_src.iterdir()):
+                if f.is_file():
+                    zf.write(f, arcname=f'icons/{f.name}')
     return dst
 
 

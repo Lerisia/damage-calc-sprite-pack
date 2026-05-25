@@ -2,11 +2,13 @@
 
 Pre-built Pokémon sprite packs for [damage-calc.com](https://damage-calc.com)'s mobile app to import. Published as GitHub Release assets under the `latest` tag:
 
-- **bw.zip** — Black/White pixel sprites, scoped to **gen 1–5 base species and gen1-5-era formes only**. Excludes all Megas (a gen6+ mechanic), all post-gen5 regional variants (Alolan/Galarian/Hisuian/Paldean), and all gen6+ species. This boundary keeps the pack to sprites derived from the original Game Freak BW games until the [X/Y Sprite Project](https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/) (which extended BW-style art to post-gen5 Pokémon) explicitly OKs redistribution.
-- **dex.zip** — HOME 3D PNG sprites, full Pokémon coverage.
-- ~~ani.zip~~ — Animated GIF pack is intentionally not published yet, same community-attribution reason as bw's exclusions.
+- **bw.zip** — Black/White pixel sprites at the top level (scoped to **gen 1–5 base species and gen1-5-era formes only**; excludes all Megas, all post-gen5 regional variants, and all gen6+ species — that work is the [X/Y Sprite Project](https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/)'s community extension and we don't redistribute it without explicit permission) plus an `icons/` subdirectory with 40×30 box icons.
+- **dex.zip** — HOME 3D PNG sprites at the top level (full Pokémon coverage, derived from official HOME assets) plus the same `icons/` subdirectory.
+- ~~ani.zip~~ — Animated GIF pack intentionally not published yet, same community-attribution reason as bw's exclusions.
 
-A scheduled GitHub Actions workflow mirrors the latest sprites from `play.pokemonshowdown.com/sprites/` and re-publishes them as a single release. Pack sizes: bw ~1 MB, dex ~3 MB.
+Box icons are bundled inside each style pack rather than published separately, so the user only manages one download per style — the app's import flow extracts both groups in one go. Icon scope is **gen 1–7 base species only** (num 1–809). 40×30 icons are the official Sun/Moon-era Game Freak style; gen8 onwards the game switched to 68×56 and Showdown's 40×30 icons for gen8+ Pokémon are drawn by [msikma/pokesprite](https://github.com/msikma/pokesprite) and similar community projects, so we exclude them.
+
+A scheduled GitHub Actions workflow mirrors the latest sprites from `play.pokemonshowdown.com/sprites/` and re-publishes them as a single release. Pack sizes: ~2 MB each.
 
 ## How the mobile app uses these
 

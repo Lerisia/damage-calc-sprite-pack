@@ -59,12 +59,13 @@ def fetch(url: str) -> bytes:
 
 
 def to_id(name: str) -> str:
-    """Mirrors Showdown's toID() — lowercase + strip non-alphanumeric.
-    This is how Showdown keys both BattlePokedex and
-    BattlePokemonIconIndexes. We use it to look up the icon index
-    from the Pokémon's English name."""
-    return re.sub(r'[^a-z0-9]', '',
-                  name.replace('♀', 'f').replace('♂', 'm').lower())
+    """Showdown's BattlePokedex / BattlePokemonIconIndexes id for a
+    Pokémon's display name. Mirrors PS's internal key derivation:
+    species first, then the form suffix joined without separator —
+    'Mega Charizard X' → 'charizardmegax', not 'megacharizardx'.
+    Reuse spriteKeyFor's classification logic to get the parts in
+    the right order, then strip the hyphen we use for our own keys."""
+    return sprite_key(name).replace('-', '')
 
 
 def parse_icon_indexes(ts_source: str) -> dict[str, int]:
@@ -119,16 +120,27 @@ def parse_pokedex_nums(js_source: str) -> dict[str, int]:
 
 def icon_index(name: str, overrides: dict[str, int],
                pokedex: dict[str, int]) -> int | None:
-    """Resolve a Pokémon's icon index using the same lookup chain as
-    Showdown's getPokemonIconNum: overrides first, base .num
-    otherwise. Returns None when we can't find the species at all
-    (Champions-original Megas Showdown doesn't know about, etc.)."""
+    """Resolve a Pokémon's icon index — restricted to gen1-7 base
+    species (num 1-809) only.
+
+    Background: 40×30 box icons are the gen6-7 (Sun/Moon era) official
+    Game Freak style. From gen8 onwards Game Freak switched to 68×56
+    icons (Pokémon HOME's actual format), so the 40×30 icons Showdown
+    serves for gen8+ Pokémon were drawn by community projects
+    (msikma/pokesprite issue #72 and similar) to fill the gap. We
+    don't redistribute that community work — gen8+ Pokémon fall
+    through to the app's base-species fallback chain (which shows
+    the base BW / HOME sprite scaled down).
+
+    The override table (BattlePokemonIconIndexes) is also ignored
+    here for the same reason: it mixes official Mega/regional icons
+    (gen6-7) with community-drawn ones (ZA Megas, CAP, etc.) and
+    we can't separate them by code alone."""
     sid = to_id(name)
-    if sid in overrides:
-        return overrides[sid]
     if sid in pokedex:
         num = pokedex[sid]
-        if 0 <= num <= 1025:
+        # Gen 1-7 covers num 1..809; gen8 starts at 810.
+        if 1 <= num <= 809:
             return num
     return None
 
