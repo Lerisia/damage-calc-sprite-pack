@@ -49,6 +49,42 @@ jobs:
         run: |
           ls -lh packs/
 
+      # Stage individual sprite files into sprites/<style>/ + sprites/
+      # icons/ at repo root. The damage-calc web build reads these via
+      # cdn.jsdelivr.net/gh — Showdown's own CDN doesn't send CORS
+      # headers, which CanvasKit's image pipeline requires, so the
+      # web app needs a CORS-friendly mirror. GitHub raw / jsDelivr
+      # both serve with access-control-allow-origin: *.
+      - name: Stage extracted sprites for jsDelivr
+        run: |
+          rm -rf sprites
+          mkdir -p sprites/bw sprites/dex sprites/icons
+          cp -r work/bw/. sprites/bw/
+          cp -r work/dex/. sprites/dex/
+          cp -r work/icons/. sprites/icons/
+          # Manifest so future tooling can tell which files belong
+          # to which pack at a glance.
+          {
+            echo "Built: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            echo "bw: $(ls sprites/bw | wc -l) files"
+            echo "dex: $(ls sprites/dex | wc -l) files"
+            echo "icons: $(ls sprites/icons | wc -l) files"
+          } > sprites/MANIFEST.txt
+
+      - name: Commit sprite tree if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add sprites
+          if git diff --cached --quiet; then
+            echo "No sprite tree changes."
+          else
+            git commit -m "auto: refresh extracted sprite tree"
+            git push origin main
+          fi
+
       - name: Re-create 'latest' release with the published packs
         env:
           GH_TOKEN: ${{ github.token }}
