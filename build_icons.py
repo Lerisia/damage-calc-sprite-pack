@@ -161,59 +161,47 @@ def parse_pokedex_entries(js_source: str) -> dict[str, dict]:
     return out
 
 
-# Forme strings introduced in gen8+ — we exclude these because
-# their 40×30 icons are community-extension work (Showdown's icon
-# sheet was extended past the gen7 SuMo official art). Forme
-# values from Showdown's pokedex use exactly these prefixes.
-GEN8_PLUS_FORME_PREFIXES = (
-    'Hisui',          # gen8 PLA
-    'Galar',          # gen8 SwSh (Galar / Galar-Zen)
-    'Paldea',         # gen9 SV (Paldea-Combat / -Blaze / -Aqua)
-    'Gmax',           # gen8 Gigantamax
-    'Eternamax',      # gen8 Eternatus
-)
-
-
 def icon_index(name: str, overrides: dict[str, int],
                pokedex_entries: dict[str, dict]) -> int | None:
-    """Resolve a Pokémon's icon index using Showdown's lookup chain
-    while restricting to forms that had an official 40×30 icon in
-    gen6-7 games.
+    """Resolve a Pokémon's icon index using Showdown's lookup chain.
 
     Inclusion rules:
       - Must exist in Showdown's BattlePokedex (filters out
-        Champions-original Megas and similar fan entries we have
-        in mega.json but Showdown doesn't).
-      - Base species num must be 1-809 (gen1-7 — base gen8+ species
-        don't have 40×30 art).
-      - Form's `forme` field must NOT start with any gen8+ prefix
-        (Hisui / Galar / Paldea / Gmax / Eternamax) — those are
-        community work because the 40×30 sheet stopped getting
-        official additions after gen7.
+        Champions-original Megas and similar fan entries we have in
+        mega.json but Showdown doesn't ship icons for).
+      - Base species num must be 1-1025 (gen1-9; future-gen entries
+        the Showdown sheet hasn't added yet just won't resolve).
+      - isNonstandard ∈ {None, "Past"} — drops Future (community-
+        speculation Megas like Mega Excadrill, Mega Barbaracle) and
+        CAP (Smogon Create-A-Pokémon) entries that have positions on
+        the sheet but aren't real Pokémon.
+
+    Scope basis:
+      - gen1-7 icons + their forms (Megas, Alolan, Primal, etc.) are
+        Game Freak ROM rips from Sun/Moon.
+      - gen8+ icons + forms (Galarian, Hisuian, Paldean, Gigantamax,
+        Eternamax) are community-extension work by the msikma/
+        pokesprite project, which is MIT-licensed. Sprite IP is still
+        Game Freak / Nintendo, but the redistribution license is
+        permissive ("Feel free to use PokéSprite in your own projects
+        or to create derivative works. We appreciate it if you credit
+        the project, but it's not required."). So community-extension
+        forms are in scope alongside the official ROM-rip ones.
 
     Position lookup:
-      - BattlePokemonIconIndexes override first (forms with their
-        own icon position — Megas, Alolan, Primal, gen3-7 formes
-        all sit here, pointing to the official gen-7 sheet
-        positions).
+      - BattlePokemonIconIndexes override first (forms with their own
+        icon position — Megas, Alolan, Primal, regional variants
+        across all gens, formes that don't share the base species'
+        slot).
       - Fall back to BattlePokedex base num (plain species)."""
     sid = to_id(name)
     entry = pokedex_entries.get(sid)
     if entry is None:
         return None
-    if not (1 <= entry['num'] <= 809):
+    if not (1 <= entry['num'] <= 1025):
         return None
-    # Drop community-extension Megas (e.g., Mega Excadrill, Mega
-    # Barbaracle — marked Future) and CAP entries — they have
-    # positions on Showdown's icon sheet but the art is X/Y
-    # Sprite Project / community work, not gen6-7 official.
     if entry['isNonstandard'] not in (None, 'Past'):
         return None
-    forme = entry['forme']
-    if forme is not None:
-        for prefix in GEN8_PLUS_FORME_PREFIXES:
-            if forme.startswith(prefix):
-                return None
     if sid in overrides:
         return overrides[sid]
     return entry['num']

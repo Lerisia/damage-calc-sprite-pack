@@ -32,21 +32,19 @@ WORK_DIR = Path('work')
 #
 # 'scope' decides which Pokémon names get fetched for that style:
 #  * 'all'   — every entry in damage-calc's pokedex (~1239 sprites).
-#  * 'gen15' — gen1-5 base species + forms whose base is gen1-5. This
-#              limits us to Pokémon that had real BW sprites in the
-#              original Gen-5 games, plus their official formes; it
-#              excludes all gen6+ species, all Megas (a gen6 mechanic,
-#              and the BW-style art is the X/Y Sprite Project's
-#              community work), and all post-gen5 regional variants
-#              (Alolan/Galarian/Hisuian/Paldean — also X/Y Project
-#              community work). We avoid redistributing X/Y Sprite
-#              Project content until Layell explicitly OKs it.
+#              For BW, the gen6+ extension art is covered by three
+#              Smogon community projects (X/Y, Sun/Moon, Sword/Shield)
+#              whose OPs grant non-profit-with-credit use; see the
+#              app's in-product credits dialog for verbatim license
+#              text. Anything Showdown's CDN doesn't have (e.g.
+#              Champions-original Megas not in any project) silently
+#              404s in the per-key fetch and just doesn't ship.
 #
-# 'ani' is intentionally omitted from this list — the animated GIFs
-# for gen6+ are also community-extension work whose provenance we
-# can't separate cleanly, so we don't ship that pack at all yet.
+# 'ani' is intentionally omitted from this list — animated GIFs use
+# the same Smogon project license, but the source-of-truth project
+# threads have a separate audit pending.
 STYLES = [
-    ('bw',  'gen5', 'png', 'gen15'),
+    ('bw',  'gen5', 'png', 'all'),
     ('dex', 'dex',  'png', 'all'),
 ]
 
