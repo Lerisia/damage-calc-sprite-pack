@@ -108,21 +108,56 @@ def parse_icon_indexes(ts_source: str) -> dict[str, int]:
 
 def parse_pokedex_entries(js_source: str) -> dict[str, dict]:
     """Return every entry in Showdown's pokedex.js as
-    {id → {'num': int, 'forme': str|None}}. Includes form variants
-    (entries with baseSpecies) because we now want to keep those
-    that have their own icon position (Megas, Primal, Alolan,
-    gen3-7 formes) and only skip the gen8+ ones via the forme
-    field."""
+    {id → {'num': int, 'forme': str|None, 'isNonstandard': str|None}}.
+
+    The isNonstandard field is how Showdown marks speculative /
+    community-extension entries vs ones that have appeared in
+    real games:
+      * None   — currently legal in some format (real Pokémon)
+      * "Past" — was in real games but isn't legal now (e.g.,
+                 every Mega Evolution post-SwSh, ORAS-only formes)
+      * "Future" — fan-/community-speculation, not in any real
+                   game yet (Mega Excadrill, Mega Barbaracle etc.)
+      * "CAP"  — Smogon's Create-A-Pokémon project
+
+    For 40×30 icons we want the union of {None, "Past"} — those
+    had real-game icons. Future / CAP are community-drawn extras
+    on the icon sheet and we don't redistribute those."""
     out: dict[str, dict] = {}
-    for m in re.finditer(
-            r'(\w+):\{num:(-?\d+),(.*?)(?=\}\,\w+:\{num:|\}\;?$)',
-            js_source):
-        key, num, body = m.group(1), int(m.group(2)), m.group(3)
+    # Brace-balanced extraction so we capture the FULL entry body
+    # — earlier regex stopped at the next num: pattern and missed
+    # isNonstandard / requiredItem fields that come later.
+    i = 0
+    while True:
+        m = re.search(r'(\w+):\{num:(-?\d+),', js_source[i:])
+        if not m:
+            break
+        key = m.group(1)
+        num = int(m.group(2))
+        # m.start() / m.end() are relative to js_source[i:]; absolute
+        # position of the '{' that opens the entry body is
+        # (i + m.start()) + len(key) + 1 (the colon between key
+        # and the brace).
+        body_start = i + m.start() + len(key) + 1
+        depth = 0
+        j = body_start
+        while j < len(js_source):
+            if js_source[j] == '{':
+                depth += 1
+            elif js_source[j] == '}':
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        body = js_source[body_start:j + 1]
         forme_m = re.search(r'forme:"([^"]+)"', body)
+        ns_m = re.search(r'isNonstandard:"([^"]+)"', body)
         out[key] = {
             'num': num,
             'forme': forme_m.group(1) if forme_m else None,
+            'isNonstandard': ns_m.group(1) if ns_m else None,
         }
+        i = j + 1
     return out
 
 
@@ -167,6 +202,12 @@ def icon_index(name: str, overrides: dict[str, int],
     if entry is None:
         return None
     if not (1 <= entry['num'] <= 809):
+        return None
+    # Drop community-extension Megas (e.g., Mega Excadrill, Mega
+    # Barbaracle — marked Future) and CAP entries — they have
+    # positions on Showdown's icon sheet but the art is X/Y
+    # Sprite Project / community work, not gen6-7 official.
+    if entry['isNonstandard'] not in (None, 'Past'):
         return None
     forme = entry['forme']
     if forme is not None:
