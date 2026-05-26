@@ -32,19 +32,25 @@ WORK_DIR = Path('work')
 #
 # 'scope' decides which Pokémon names get fetched for that style:
 #  * 'all'   — every entry in damage-calc's pokedex (~1239 sprites).
-#              For BW, the gen6+ extension art is covered by three
-#              Smogon community projects (X/Y, Sun/Moon, Sword/Shield)
-#              whose OPs grant non-profit-with-credit use; see the
-#              app's in-product credits dialog for verbatim license
-#              text. Anything Showdown's CDN doesn't have (e.g.
-#              Champions-original Megas not in any project) silently
-#              404s in the per-key fetch and just doesn't ship.
+#              Used for HOME 3D (dex) where the IP is uniformly Game
+#              Freak / Nintendo — same gray-zone redistribution
+#              status everywhere, no per-key license filter needed.
+#
+#  * 'bw_credited' — gen1-5 base species + their gen1-5-era forms
+#              (Game Freak ROM rips from BW) ∪ keys credited to the
+#              X/Y / Sun/Moon / Sword/Shield Sprite Projects per
+#              sprite_credits.json. Filters out non-pixel placeholders
+#              that Showdown's community sometimes drops into gen5/
+#              for newly-announced Pokémon (e.g. ZA Megas like Mega
+#              Feraligatr that have no BW art yet — Showdown puts the
+#              official Game Freak ZA illustration there as a stand-
+#              in, and we don't want that mixed into our pixel pack).
 #
 # 'ani' is intentionally omitted from this list — animated GIFs use
 # the same Smogon project license, but the source-of-truth project
 # threads have a separate audit pending.
 STYLES = [
-    ('bw',  'gen5', 'png', 'all'),
+    ('bw',  'gen5', 'png', 'bw_credited'),
     ('dex', 'dex',  'png', 'all'),
 ]
 
@@ -285,13 +291,47 @@ def zip_style(style_key: str) -> Path:
     return dst
 
 
+def collect_names_bw_credited() -> set[str]:
+    """gen1-5 ROM-rip scope ∪ keys credited to a Smogon Sprite Project.
+
+    Showdown's gen5/ folder contains two unrelated kinds of content:
+      1. Real BW pixel art (gen1-5 from Game Freak's BW games + later
+         pixel art from the X/Y / Sun/Moon / Sword/Shield Sprite
+         Projects).
+      2. Stand-in art for newly-announced Pokémon whose BW pixel
+         version doesn't exist yet — typically the official Game
+         Freak illustration. ZA Megas (Mega Feraligatr, Mega
+         Krookodile, etc.) currently sit here.
+
+    Class (1) is licensed; class (2) is outside our verified license
+    scope AND visually breaks a pixel pack. Filter by attribution:
+    if a sprite_key is in our audited credit data, it's class (1).
+    Otherwise we only accept it when it's a Game Freak ROM rip
+    (gen1-5 base species or gen1-5-era form)."""
+    credits_path = Path('sprite_credits.json')
+    credited_keys: set[str] = set()
+    if credits_path.exists():
+        credits = json.loads(credits_path.read_text(encoding='utf-8'))
+        credited_keys = set(credits.get('by_sprite_key', {}).keys())
+    rom_rip_names = collect_names_gen15()
+    out: set[str] = set(rom_rip_names)
+    for n in collect_names_all():
+        if sprite_key(n) in credited_keys:
+            out.add(n)
+    return out
+
+
 def main() -> int:
     all_names = sorted(collect_names_all())
-    gen15_names = sorted(collect_names_gen15())
+    bw_credited_names = sorted(collect_names_bw_credited())
     print(f'All Pokémon names: {len(all_names)}')
-    print(f'Gen 1-5 scope: {len(gen15_names)}')
+    print(f'BW credited scope (gen1-5 ROM rip + Smogon-project-credited): '
+          f'{len(bw_credited_names)}')
     for style_key, sd_dir, ext, scope in STYLES:
-        names = gen15_names if scope == 'gen15' else all_names
+        if scope == 'bw_credited':
+            names = bw_credited_names
+        else:
+            names = all_names
         print(f'\n== {style_key} ({sd_dir}/*.{ext}, scope={scope}, '
               f'targets={len(names)}) ==')
         n_ok = build_style(style_key, sd_dir, ext, names)
