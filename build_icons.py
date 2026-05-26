@@ -106,58 +106,76 @@ def parse_icon_indexes(ts_source: str) -> dict[str, int]:
     return out
 
 
-def parse_pokedex_nums(js_source: str) -> dict[str, int]:
-    """Pull the `num` field for each *base* species from Showdown's
-    pokedex.js. Entries look like:
-        pikachu:{num:25,name:"Pikachu",types:[...]}
-        venusaurmega:{num:3,name:"Venusaur-Mega",baseSpecies:"Venusaur",forme:"Mega",...}
-    Form entries (those with a baseSpecies field) inherit their
-    base's num and would just duplicate the base species' icon if
-    we included them — Showdown's icon sheet for the form key
-    points to the base position. We skip them here so the pack
-    contains one icon per base species, and the app's
-    base-species fallback chain shows the base icon for any form
-    request."""
-    out: dict[str, int] = {}
-    # Match the full entry up to its closing brace so we can detect
-    # baseSpecies inside it. Use a non-greedy match bounded by the
-    # next `,name:` (which always opens a new entry) to avoid
-    # crossing entry boundaries.
+def parse_pokedex_entries(js_source: str) -> dict[str, dict]:
+    """Return every entry in Showdown's pokedex.js as
+    {id → {'num': int, 'forme': str|None}}. Includes form variants
+    (entries with baseSpecies) because we now want to keep those
+    that have their own icon position (Megas, Primal, Alolan,
+    gen3-7 formes) and only skip the gen8+ ones via the forme
+    field."""
+    out: dict[str, dict] = {}
     for m in re.finditer(
             r'(\w+):\{num:(-?\d+),(.*?)(?=\}\,\w+:\{num:|\}\;?$)',
             js_source):
         key, num, body = m.group(1), int(m.group(2)), m.group(3)
-        if 'baseSpecies:' in body:
-            continue  # form, would duplicate base
-        out[key] = num
+        forme_m = re.search(r'forme:"([^"]+)"', body)
+        out[key] = {
+            'num': num,
+            'forme': forme_m.group(1) if forme_m else None,
+        }
     return out
 
 
+# Forme strings introduced in gen8+ — we exclude these because
+# their 40×30 icons are community-extension work (Showdown's icon
+# sheet was extended past the gen7 SuMo official art). Forme
+# values from Showdown's pokedex use exactly these prefixes.
+GEN8_PLUS_FORME_PREFIXES = (
+    'Hisui',          # gen8 PLA
+    'Galar',          # gen8 SwSh (Galar / Galar-Zen)
+    'Paldea',         # gen9 SV (Paldea-Combat / -Blaze / -Aqua)
+    'Gmax',           # gen8 Gigantamax
+    'Eternamax',      # gen8 Eternatus
+)
+
+
 def icon_index(name: str, overrides: dict[str, int],
-               pokedex: dict[str, int]) -> int | None:
-    """Resolve a Pokémon's icon index — restricted to gen1-7 base
-    species (num 1-809) only.
+               pokedex_entries: dict[str, dict]) -> int | None:
+    """Resolve a Pokémon's icon index using Showdown's lookup chain
+    while restricting to forms that had an official 40×30 icon in
+    gen6-7 games.
 
-    Background: 40×30 box icons are the gen6-7 (Sun/Moon era) official
-    Game Freak style. From gen8 onwards Game Freak switched to 68×56
-    icons (Pokémon HOME's actual format), so the 40×30 icons Showdown
-    serves for gen8+ Pokémon were drawn by community projects
-    (msikma/pokesprite issue #72 and similar) to fill the gap. We
-    don't redistribute that community work — gen8+ Pokémon fall
-    through to the app's base-species fallback chain (which shows
-    the base BW / HOME sprite scaled down).
+    Inclusion rules:
+      - Must exist in Showdown's BattlePokedex (filters out
+        Champions-original Megas and similar fan entries we have
+        in mega.json but Showdown doesn't).
+      - Base species num must be 1-809 (gen1-7 — base gen8+ species
+        don't have 40×30 art).
+      - Form's `forme` field must NOT start with any gen8+ prefix
+        (Hisui / Galar / Paldea / Gmax / Eternamax) — those are
+        community work because the 40×30 sheet stopped getting
+        official additions after gen7.
 
-    The override table (BattlePokemonIconIndexes) is also ignored
-    here for the same reason: it mixes official Mega/regional icons
-    (gen6-7) with community-drawn ones (ZA Megas, CAP, etc.) and
-    we can't separate them by code alone."""
+    Position lookup:
+      - BattlePokemonIconIndexes override first (forms with their
+        own icon position — Megas, Alolan, Primal, gen3-7 formes
+        all sit here, pointing to the official gen-7 sheet
+        positions).
+      - Fall back to BattlePokedex base num (plain species)."""
     sid = to_id(name)
-    if sid in pokedex:
-        num = pokedex[sid]
-        # Gen 1-7 covers num 1..809; gen8 starts at 810.
-        if 1 <= num <= 809:
-            return num
-    return None
+    entry = pokedex_entries.get(sid)
+    if entry is None:
+        return None
+    if not (1 <= entry['num'] <= 809):
+        return None
+    forme = entry['forme']
+    if forme is not None:
+        for prefix in GEN8_PLUS_FORME_PREFIXES:
+            if forme.startswith(prefix):
+                return None
+    if sid in overrides:
+        return overrides[sid]
+    return entry['num']
 
 
 def main() -> int:
@@ -177,8 +195,8 @@ def main() -> int:
 
     print('Fetching pokedex.js...')
     pokedex_js = fetch(POKEDEX_URL).decode('utf-8', errors='replace')
-    pokedex_nums = parse_pokedex_nums(pokedex_js)
-    print(f'  pokedex entries: {len(pokedex_nums)}')
+    pokedex_entries = parse_pokedex_entries(pokedex_js)
+    print(f'  pokedex entries: {len(pokedex_entries)}')
 
     out_dir = WORK_DIR / 'icons'
     if out_dir.exists():
@@ -190,7 +208,7 @@ def main() -> int:
     print(f'\nSlicing icons for {len(names)} Pokémon names...')
     ok, miss = 0, []
     for name in names:
-        idx = icon_index(name, overrides, pokedex_nums)
+        idx = icon_index(name, overrides, pokedex_entries)
         if idx is None:
             miss.append(name)
             continue
