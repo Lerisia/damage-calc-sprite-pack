@@ -54,6 +54,12 @@ STYLES = [
     ('dex', 'dex',  'png', 'all'),
 ]
 
+# Each entry above also gets a shiny companion fetched from
+# `<sd_dir>-shiny/` on the same CDN. The shiny files land inside
+# the regular style's ZIP at `shiny/<key>.png` (see zip_style),
+# so the user downloads one bundle per style and the app picks
+# regular vs shiny based on a per-Pokemon flag.
+
 # Per-name overrides — same set as the Dart side. Discovered
 # empirically against Showdown's CDN.
 OVERRIDES = {
@@ -267,23 +273,32 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
 
 
 def zip_style(style_key: str) -> Path:
-    """ZIP the style's sprite files at the top level, and nest the
-    box-icon files under an `icons/` subdirectory if work/icons/ is
-    populated (build_icons.py runs before build_packs.py in the
-    workflow). Bundling icons into every style pack means the user
-    only manages one download per style — the app's import flow
-    extracts both groups in one go and the user never has to think
-    about box icons as a separate asset."""
+    """ZIP the style's sprite files at the top level, the shiny
+    variants under `shiny/`, and the box-icon files under `icons/`.
+    Bundling everything into a single per-style ZIP means the user
+    only manages one download per style — the app extracts all
+    groups in one go and the user never has to think about shiny
+    vs box icons as separate assets.
+
+    Shiny lives at `work/<style>/shiny/` (not `work/<style>-shiny/`)
+    so the workflow's existing `cp -r work/<style>/. sprites/<style>/`
+    carries the shiny subdir along to the jsDelivr staging tree
+    without needing a workflow-yml change."""
     import zipfile
     src = WORK_DIR / style_key
+    shiny_src = src / 'shiny'
     icons_src = WORK_DIR / 'icons'
     dst = PACKS_DIR / f'{style_key}.zip'
     PACKS_DIR.mkdir(exist_ok=True)
     with zipfile.ZipFile(dst, 'w', zipfile.ZIP_DEFLATED,
                          compresslevel=6) as zf:
         for f in sorted(src.iterdir()):
-            if f.is_file():
+            if f.is_file():  # skip the shiny/ subdir entry here
                 zf.write(f, arcname=f.name)
+        if shiny_src.exists():
+            for f in sorted(shiny_src.iterdir()):
+                if f.is_file():
+                    zf.write(f, arcname=f'shiny/{f.name}')
         if icons_src.exists():
             for f in sorted(icons_src.iterdir()):
                 if f.is_file():
@@ -335,8 +350,20 @@ def main() -> int:
         print(f'\n== {style_key} ({sd_dir}/*.{ext}, scope={scope}, '
               f'targets={len(names)}) ==')
         n_ok = build_style(style_key, sd_dir, ext, names)
+        # Shiny companion — same scope as the regular variant. Lives
+        # at work/<style>/shiny/ (a subdir of the regular style's
+        # work dir) so the workflow's existing
+        # `cp -r work/<style>/. sprites/<style>/` propagates it to
+        # the jsDelivr staging tree without a workflow edit. Some
+        # entries won't exist as shiny upstream (rare niche forms,
+        # ZA Megas) and just won't end up in the ZIP — the app's
+        # fallback path then renders the regular variant in shiny
+        # mode (better than a pokeball).
+        n_shiny = build_style(
+            f'{style_key}/shiny', f'{sd_dir}-shiny', ext, names)
         z = zip_style(style_key)
-        print(f'  fetched: {n_ok} / {len(names)}')
+        print(f'  fetched: {n_ok} / {len(names)} (regular)')
+        print(f'  fetched: {n_shiny} / {len(names)} (shiny)')
         print(f'  packed: {z} ({z.stat().st_size / 1024 / 1024:.1f} MB)')
     return 0
 
