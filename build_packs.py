@@ -28,6 +28,26 @@ DATA_DIR = Path('data')
 PACKS_DIR = Path('packs')
 WORK_DIR = Path('work')
 
+# Manually-bumped pack revision. Read from PACK_VERSION at repo root,
+# embedded as a top-level VERSION file inside every style ZIP, and
+# compared against the app's hard-coded kLatestSpritePackVersion at
+# install time to decide whether to nag the user to re-download.
+# Bump this only when the released packs contain content that the
+# current app build needs (new shinies, new Pokémon, etc.) — nightly
+# Showdown CDN catch-ups that don't change the on-disk sprite tree
+# should NOT bump this; the workflow re-publishes 'latest' every
+# build, but VERSION stays put unless this file changes.
+PACK_VERSION_FILE = Path('PACK_VERSION')
+
+
+def read_pack_version() -> str:
+    if not PACK_VERSION_FILE.exists():
+        # Default to "0" so legacy environments still produce a valid
+        # ZIP — the app treats "0" as a mismatch against its
+        # current-version constant and shows the update nag.
+        return '0'
+    return PACK_VERSION_FILE.read_text(encoding='utf-8').strip()
+
 # (style key, Showdown CDN subdir, file extension, scope)
 #
 # 'scope' decides which Pokémon names get fetched for that style:
@@ -290,8 +310,14 @@ def zip_style(style_key: str) -> Path:
     icons_src = WORK_DIR / 'icons'
     dst = PACKS_DIR / f'{style_key}.zip'
     PACKS_DIR.mkdir(exist_ok=True)
+    pack_version = read_pack_version()
     with zipfile.ZipFile(dst, 'w', zipfile.ZIP_DEFLATED,
                          compresslevel=6) as zf:
+        # Top-level VERSION marker. The app extracts this into the
+        # per-style cache dir at install time and compares it against
+        # its bundled kLatestSpritePackVersion to decide whether to
+        # show the update-available nag.
+        zf.writestr('VERSION', pack_version + '\n')
         for f in sorted(src.iterdir()):
             if f.is_file():  # skip the shiny/ subdir entry here
                 zf.write(f, arcname=f.name)
@@ -339,9 +365,11 @@ def collect_names_bw_credited() -> set[str]:
 def main() -> int:
     all_names = sorted(collect_names_all())
     bw_credited_names = sorted(collect_names_bw_credited())
+    pack_version = read_pack_version()
     print(f'All Pokémon names: {len(all_names)}')
     print(f'BW credited scope (gen1-5 ROM rip + Smogon-project-credited): '
           f'{len(bw_credited_names)}')
+    print(f'Embedding PACK_VERSION="{pack_version}" into every style ZIP.')
     for style_key, sd_dir, ext, scope in STYLES:
         if scope == 'bw_credited':
             names = bw_credited_names
