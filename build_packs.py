@@ -293,38 +293,47 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
 
 
 def build_trainers() -> int:
-    """Pull Showdown's full sprites/trainers/ folder via sparse
-    checkout. Trainers aren't style-specific so they live in a
-    shared work/trainers/ and get bundled into every per-style
-    ZIP under `trainers/`. Source: smogon/pokemon-showdown-client
-    repo (play.pokemonshowdown.com/sprites/trainers/).
+    """Download every Showdown trainer sprite into work/trainers/,
+    one PNG per key. Trainers aren't style-specific, so the same
+    set gets bundled into every per-style ZIP under `trainers/`.
 
-    Sparse-clone (depth=1, filter=blob:none, sparse-checkout) keeps
-    the workflow under ~30s extra; we never download the full
-    pokemon-showdown-client tarball."""
+    The key list comes from damage-calc's lib/data/trainer_keys.dart
+    (1455 entries; the canonical curated set the app's trainer-card
+    dialog picker draws from). We fetch that file via HTTPS, parse
+    the single-quoted string literals, then pull each
+    `play.pokemonshowdown.com/sprites/trainers/<key>.png`.
+
+    Note on source: the trainer art lives on Showdown's CDN only —
+    `smogon/pokemon-showdown-client` keeps the `sprites/trainers/`
+    directory mostly empty in git (just an index.php), so we can't
+    sparse-clone our way to it. The earlier sparse-clone version of
+    this function shipped 0 trainers because of that."""
+    import urllib.request
+
     trainers_dir = WORK_DIR / 'trainers'
     if trainers_dir.exists():
         shutil.rmtree(trainers_dir)
     trainers_dir.mkdir(parents=True)
-    tmp = Path('sd-trainers-checkout')
-    if tmp.exists():
-        shutil.rmtree(tmp)
-    subprocess.run(
-        ['git', 'clone', '--depth=1', '--filter=blob:none', '--sparse',
-         'https://github.com/smogon/pokemon-showdown-client.git', str(tmp)],
-        check=True, capture_output=True,
-    )
-    subprocess.run(
-        ['git', '-C', str(tmp), 'sparse-checkout', 'set',
-         'play.pokemonshowdown.com/sprites/trainers'],
-        check=True, capture_output=True,
-    )
-    src_dir = tmp / 'play.pokemonshowdown.com' / 'sprites' / 'trainers'
+
+    keys_url = ('https://raw.githubusercontent.com/Lerisia/damage-calc/'
+                'main/lib/data/trainer_keys.dart')
+    with urllib.request.urlopen(keys_url, timeout=30) as resp:
+        keys_src = resp.read().decode('utf-8')
+    keys = re.findall(r"'([^']+)'", keys_src)
+    if not keys:
+        print('  WARN: trainer_keys.dart parsed 0 keys — skipping')
+        return 0
+
+    base = 'https://play.pokemonshowdown.com/sprites/trainers'
+
+    def fetch_one(k: str) -> bool:
+        return download(f'{base}/{k}.png', trainers_dir / f'{k}.png')
+
     ok = 0
-    for f in src_dir.glob('*.png'):
-        shutil.copy2(f, trainers_dir / f.name)
-        ok += 1
-    shutil.rmtree(tmp, ignore_errors=True)
+    with ThreadPoolExecutor(max_workers=24) as ex:
+        for got in ex.map(fetch_one, keys):
+            if got:
+                ok += 1
     return ok
 
 
