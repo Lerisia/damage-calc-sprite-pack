@@ -292,22 +292,62 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
     return ok
 
 
+def build_trainers() -> int:
+    """Pull Showdown's full sprites/trainers/ folder via sparse
+    checkout. Trainers aren't style-specific so they live in a
+    shared work/trainers/ and get bundled into every per-style
+    ZIP under `trainers/`. Source: smogon/pokemon-showdown-client
+    repo (play.pokemonshowdown.com/sprites/trainers/).
+
+    Sparse-clone (depth=1, filter=blob:none, sparse-checkout) keeps
+    the workflow under ~30s extra; we never download the full
+    pokemon-showdown-client tarball."""
+    trainers_dir = WORK_DIR / 'trainers'
+    if trainers_dir.exists():
+        shutil.rmtree(trainers_dir)
+    trainers_dir.mkdir(parents=True)
+    tmp = Path('sd-trainers-checkout')
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    subprocess.run(
+        ['git', 'clone', '--depth=1', '--filter=blob:none', '--sparse',
+         'https://github.com/smogon/pokemon-showdown-client.git', str(tmp)],
+        check=True, capture_output=True,
+    )
+    subprocess.run(
+        ['git', '-C', str(tmp), 'sparse-checkout', 'set',
+         'play.pokemonshowdown.com/sprites/trainers'],
+        check=True, capture_output=True,
+    )
+    src_dir = tmp / 'play.pokemonshowdown.com' / 'sprites' / 'trainers'
+    ok = 0
+    for f in src_dir.glob('*.png'):
+        shutil.copy2(f, trainers_dir / f.name)
+        ok += 1
+    shutil.rmtree(tmp, ignore_errors=True)
+    return ok
+
+
 def zip_style(style_key: str) -> Path:
     """ZIP the style's sprite files at the top level, the shiny
-    variants under `shiny/`, and the box-icon files under `icons/`.
-    Bundling everything into a single per-style ZIP means the user
-    only manages one download per style — the app extracts all
-    groups in one go and the user never has to think about shiny
-    vs box icons as separate assets.
+    variants under `shiny/`, the box-icon files under `icons/`, and
+    the shared trainer sprites under `trainers/`. Bundling
+    everything into a single per-style ZIP means the user only
+    manages one download per style — the app extracts all groups
+    in one go and the user never has to think about shiny / box
+    icons / trainer sprites as separate assets.
 
     Shiny lives at `work/<style>/shiny/` (not `work/<style>-shiny/`)
     so the workflow's existing `cp -r work/<style>/. sprites/<style>/`
     carries the shiny subdir along to the jsDelivr staging tree
-    without needing a workflow-yml change."""
+    without needing a workflow-yml change. Trainers live at the
+    shared `work/trainers/` since they're identical across styles
+    — both bw.zip and dex.zip get a copy embedded under trainers/."""
     import zipfile
     src = WORK_DIR / style_key
     shiny_src = src / 'shiny'
     icons_src = WORK_DIR / 'icons'
+    trainers_src = WORK_DIR / 'trainers'
     dst = PACKS_DIR / f'{style_key}.zip'
     PACKS_DIR.mkdir(exist_ok=True)
     pack_version = read_pack_version()
@@ -329,6 +369,10 @@ def zip_style(style_key: str) -> Path:
             for f in sorted(icons_src.iterdir()):
                 if f.is_file():
                     zf.write(f, arcname=f'icons/{f.name}')
+        if trainers_src.exists():
+            for f in sorted(trainers_src.iterdir()):
+                if f.is_file():
+                    zf.write(f, arcname=f'trainers/{f.name}')
     return dst
 
 
@@ -370,6 +414,11 @@ def main() -> int:
     print(f'BW credited scope (gen1-5 ROM rip + Smogon-project-credited): '
           f'{len(bw_credited_names)}')
     print(f'Embedding PACK_VERSION="{pack_version}" into every style ZIP.')
+    # Trainers are shared across styles — build once, embed in every
+    # per-style ZIP under trainers/.
+    print('\n== trainers (sparse-clone from pokemon-showdown-client) ==')
+    n_trainers = build_trainers()
+    print(f'  trainer sprites: {n_trainers}')
     for style_key, sd_dir, ext, scope in STYLES:
         if scope == 'bw_credited':
             names = bw_credited_names
