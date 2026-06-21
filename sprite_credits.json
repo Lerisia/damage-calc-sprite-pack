@@ -2940,6 +2940,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "barbaracle-mega": {
+      "raw_name_in_sheet": "Barbaracle",
+      "dex_num": "689",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "barraskewda": {
       "raw_name_in_sheet": "Barraskewda",
       "dex_num": "847",
@@ -4128,6 +4150,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "chandelure-mega": {
+      "raw_name_in_sheet": "Chandelure",
+      "dex_num": "609",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "charcadet": {
       "raw_name_in_sheet": "Charcadet",
       "dex_num": "935",
@@ -4287,6 +4331,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "chesnaught-mega": {
+      "raw_name_in_sheet": "Chesnaught",
+      "dex_num": "652",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "chespin": {
       "raw_name_in_sheet": "Chespin",
       "dex_num": "650",
@@ -4404,6 +4470,28 @@
       ],
       "_aliased_from": "chien-pao",
       "_alias_note": "Sprite_key chienpao aliased to credits for chien-pao (the spreadsheet lists this Pokémon under its default form name only)."
+    },
+    "chimecho-mega": {
+      "raw_name_in_sheet": "Chimecho",
+      "dex_num": "358",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
     },
     "chiyu": {
       "raw_name_in_sheet": "Chi-Yu",
@@ -4545,6 +4633,28 @@
       },
       "bw_project": "Smogon Sprite Project (Sword/Shield+) — gen 9 sheet",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "clefable-mega": {
+      "raw_name_in_sheet": "Clefable",
+      "dex_num": "36",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -4874,6 +4984,28 @@
       },
       "bw_project": "Sun/Moon Sprite Project",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sun-moon-sprite-project.3577711/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "crabominable-mega": {
+      "raw_name_in_sheet": "Crabominable",
+      "dex_num": "740",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -5352,6 +5484,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "delphox-mega": {
+      "raw_name_in_sheet": "Delphox",
+      "dex_num": "655",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "dewpider": {
       "raw_name_in_sheet": "Dewpider",
       "dex_num": "751",
@@ -5759,6 +5913,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "dragalge-mega": {
+      "raw_name_in_sheet": "Dragalge",
+      "dex_num": "691",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "dragapult": {
       "raw_name_in_sheet": "Dragapult",
       "dex_num": "887",
@@ -5845,6 +6021,28 @@
       },
       "bw_project": "Sun/Moon Sprite Project",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sun-moon-sprite-project.3577711/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "drampa-mega": {
+      "raw_name_in_sheet": "Drampa",
+      "dex_num": "780",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -6116,6 +6314,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "eelektross-mega": {
+      "raw_name_in_sheet": "Eelektross",
+      "dex_num": "604",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "eevee-female": {
       "raw_name_in_sheet": "Eevee-female",
       "dex_num": "133",
@@ -6368,6 +6588,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "emboar-mega": {
+      "raw_name_in_sheet": "Emboar",
+      "dex_num": "500",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "enamorus": {
       "raw_name_in_sheet": "Enamorus-incarnate",
       "dex_num": "905",
@@ -6525,6 +6767,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "excadrill-mega": {
+      "raw_name_in_sheet": "Excadrill",
+      "dex_num": "530",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "exeggutor-alola": {
       "raw_name_in_sheet": "Exeggutor",
       "dex_num": "103",
@@ -6574,6 +6838,28 @@
       },
       "bw_project": "Smogon Sprite Project (Sword/Shield+)",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "falinks-mega": {
+      "raw_name_in_sheet": "Falinks",
+      "dex_num": "870",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -6668,6 +6954,28 @@
       },
       "bw_project": "Smogon Sprite Project (Sword/Shield+) — gen 9 sheet",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "feraligatr-mega": {
+      "raw_name_in_sheet": "Feraligatr",
+      "dex_num": "160",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -7127,6 +7435,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "floette-mega": {
+      "raw_name_in_sheet": "Floette",
+      "dex_num": "670",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "floette-orange": {
       "raw_name_in_sheet": "Floette-orange",
       "dex_num": "670",
@@ -7521,6 +7851,28 @@
       },
       "bw_project": "Smogon Sprite Project (Sword/Shield+) — gen 9 sheet",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "froslass-mega": {
+      "raw_name_in_sheet": "Froslass",
+      "dex_num": "478",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -8008,6 +8360,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "glimmora-mega": {
+      "raw_name_in_sheet": "Glimmora",
+      "dex_num": "970",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "gogoat": {
       "raw_name_in_sheet": "Gogoat",
       "dex_num": "673",
@@ -8069,6 +8443,28 @@
       },
       "bw_project": "Sun/Moon Sprite Project",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sun-moon-sprite-project.3577711/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "golurk-mega": {
+      "raw_name_in_sheet": "Golurk",
+      "dex_num": "623",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -8583,6 +8979,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "greninja-mega": {
+      "raw_name_in_sheet": "Greninja",
+      "dex_num": "658",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "grimer-alola": {
       "raw_name_in_sheet": "Grimer",
       "dex_num": "088",
@@ -8971,6 +9389,28 @@
       },
       "bw_project": "X/Y Sprite Project",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "hawlucha-mega": {
+      "raw_name_in_sheet": "Hawlucha",
+      "dex_num": "701",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -10824,6 +11264,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "malamar-mega": {
+      "raw_name_in_sheet": "Malamar",
+      "dex_num": "687",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "manectric-mega": {
       "raw_name_in_sheet": "Manectric",
       "dex_num": "310",
@@ -11077,6 +11539,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "meganium-mega": {
+      "raw_name_in_sheet": "Meganium",
+      "dex_num": "154",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "melmetal": {
       "raw_name_in_sheet": "Melmetal",
       "dex_num": "809",
@@ -11270,6 +11754,28 @@
       },
       "bw_project": "X/Y Sprite Project",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "meowstic-mega": {
+      "raw_name_in_sheet": "Meowstic",
+      "dex_num": "678",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -14153,6 +14659,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "pyroar-mega": {
+      "raw_name_in_sheet": "Pyroar",
+      "dex_num": "668",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "pyukumuku": {
       "raw_name_in_sheet": "Pyukumuku",
       "dex_num": "771",
@@ -14391,6 +14919,50 @@
       },
       "bw_project": "Sun/Moon Sprite Project",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sun-moon-sprite-project.3577711/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "raichu-megax": {
+      "raw_name_in_sheet": "Raichu",
+      "dex_num": "26",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "raichu-megay": {
+      "raw_name_in_sheet": "Raichu",
+      "dex_num": "26",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -15141,6 +15713,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "scolipede-mega": {
+      "raw_name_in_sheet": "Scolipede",
+      "dex_num": "545",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "scorbunny": {
       "raw_name_in_sheet": "Scorbunny",
       "dex_num": "813",
@@ -15186,6 +15780,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "scovillain-mega": {
+      "raw_name_in_sheet": "Scovillain",
+      "dex_num": "952",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "scrafty": {
       "raw_name_in_sheet": "Scrafty",
       "dex_num": "560",
@@ -15200,6 +15816,28 @@
       },
       "bw_project": "Smogon Sprite Project (Sword/Shield+) — gen 9 sheet",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "scrafty-mega": {
+      "raw_name_in_sheet": "Scrafty",
+      "dex_num": "560",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -15970,6 +16608,28 @@
       },
       "bw_project": "Smogon Sprite Project (Sword/Shield+) — gen 9 sheet",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "skarmory-mega": {
+      "raw_name_in_sheet": "Skarmory",
+      "dex_num": "227",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],
@@ -16847,6 +17507,28 @@
         "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
       ]
     },
+    "staraptor-mega": {
+      "raw_name_in_sheet": "Staraptor",
+      "dex_num": "398",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
     "starmie": {
       "raw_name_in_sheet": "Starmie",
       "dex_num": "121",
@@ -16861,6 +17543,28 @@
       },
       "bw_project": "Smogon Sprite Project (Sword/Shield+) — gen 9 sheet",
       "bw_project_thread_url": "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/",
+      "dex_artists": [
+        "Game Freak / Nintendo (HOME 3D models, official IP)"
+      ],
+      "icon_artists": [
+        "Game Freak / Nintendo (official 40x30 box icons from gen 1-7 ROMs; redistribution via msikma/pokesprite MIT-licensed code, sprites remain Game Freak IP)"
+      ]
+    },
+    "starmie-mega": {
+      "raw_name_in_sheet": "Starmie",
+      "dex_num": "121",
+      "bw_artists": [
+        "RetroNC"
+      ],
+      "bw_qc": [],
+      "bw_artist_roles": {
+        "RetroNC": [
+          "front"
+        ]
+      },
+      "bw_project": "RetroNC — Gen 5 Pokémon Sprite series (DeviantArt)",
+      "bw_project_thread_url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "bw_license_note": "Used with permission per the artist's stated terms: \"If used for projects or public works, please credit my Youtube channel\" (RetroNC, DeviantArt). Crediting RetroNC + YouTube channel @RetroNC.",
       "dex_artists": [
         "Game Freak / Nintendo (HOME 3D models, official IP)"
       ],

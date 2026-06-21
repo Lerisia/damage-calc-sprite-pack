@@ -27,6 +27,10 @@ from typing import Optional
 DATA_DIR = Path('data')
 PACKS_DIR = Path('packs')
 WORK_DIR = Path('work')
+# Sibling of work/ — holds artist-contributed sprite overrides that
+# pre-empt the CDN fetch in [build_style]. Currently used for RetroNC's
+# gen5 ZA Mega series (CREDITS.md).
+REPO_ROOT = Path(__file__).resolve().parent
 
 # Manually-bumped pack revision. Read from PACK_VERSION at repo root,
 # embedded as a top-level VERSION file inside every style ZIP, and
@@ -427,7 +431,14 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
     CDN serves an auto-downscaled HOME render for a key that
     doesn't have a genuine X/Y Sprite Project remake yet, we drop
     it rather than ship a smooth mismatched sprite among real
-    16-colour pixel art."""
+    16-colour pixel art.
+
+    Manual overrides live in `manual_sprites/<style>/<key>.<ext>` at
+    the repo root — when a file exists there it pre-empts the CDN
+    fetch entirely. This is how community-contributed BW sprites the
+    X/Y Sprite Project hasn't merged yet (e.g. RetroNC's gen5
+    versions of ZA Megas) land in the pack; see CREDITS.md for the
+    artists and their attribution requirements."""
     out_dir = WORK_DIR / style_key
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -447,10 +458,21 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
 
     bw_pixel_gate = (style_key == 'bw')
 
+    # manual_sprites/<style>/ (and /<style>-shiny/ for shiny passes)
+    # holds artist-contributed overrides. Files here pre-empt the CDN
+    # entirely and skip the pixel-art gate — they were curated by
+    # hand, so we trust them.
+    manual_subdir = f'{style_key}-shiny' if fetching_shiny else style_key
+    manual_dir = REPO_ROOT / 'manual_sprites' / manual_subdir
+
     def fetch_one(name_key: tuple[str, str]) -> bool:
         n, k = name_key
-        url = f'{base}/{k}.{ext}'
         dst = out_dir / f'{k}.{ext}'
+        manual_src = manual_dir / f'{k}.{ext}'
+        if manual_src.exists():
+            shutil.copy(manual_src, dst)
+            return True
+        url = f'{base}/{k}.{ext}'
         if download(url, dst):
             if bw_pixel_gate and not _looks_like_pixel_art(dst):
                 # Auto-downscaled HOME render leaked through gen5 CDN —

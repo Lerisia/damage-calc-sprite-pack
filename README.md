@@ -2,7 +2,7 @@
 
 Pre-built Pokémon sprite packs for [damage-calc.com](https://damage-calc.com)'s mobile app to import. Published as GitHub Release assets under the `latest` tag:
 
-- **bw.zip** — Black/White pixel sprites at the top level (scoped to **gen 1–5 base species and gen1-5-era formes only**; excludes all Megas, all post-gen5 regional variants, and all gen6+ species — that work is the [X/Y Sprite Project](https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/)'s community extension and we don't redistribute it without explicit permission) plus an `icons/` subdirectory with 40×30 box icons.
+- **bw.zip** — Black/White pixel sprites at the top level (gen 1–5 Game Freak ROM rips ∪ pixel-art remakes by the [X/Y / Sun-Moon / Sword-Shield Sprite Projects](https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/), used per their non-profit-attribution clause; plus a small `manual_sprites/bw/` set of artist-contributed Champions / Legends Z-A megas the official projects haven't merged yet — currently RetroNC's gen5 Mega series from DeviantArt, used per RetroNC's stated terms) plus an `icons/` subdirectory with 40×30 box icons.
 - **dex.zip** — HOME 3D PNG sprites at the top level (full Pokémon coverage, derived from official HOME assets) plus the same `icons/` subdirectory.
 - ~~ani.zip~~ — Animated GIF pack intentionally not published yet, same community-attribution reason as bw's exclusions.
 
@@ -19,6 +19,7 @@ The web version of damage-calc.com fetches sprites directly from `play.pokemonsh
 ## Credits and license
 
 - BW pixel sprites are produced by the [Smogon Sprite Project](https://www.smogon.com/forums/threads/smogon-sprite-project.3647722/) and [X/Y Sprite Project](https://www.smogon.com/forums/threads/x-y-sprite-project.3486712/) community. Used here under their stated non-profit-use clause, with credit.
+- BW pixel sprites for Champions / Legends Z-A megas not yet picked up by the official projects (Mega Staraptor, Mega Pyroar, Mega Raichu X/Y, Mega Scolipede, Mega Falinks, Mega Malamar, Mega Drampa, Mega Feraligatr, Mega Greninja, Mega Meganium, Mega Magearna, ..., 32 total at last count) are by [RetroNC](https://www.deviantart.com/retronc) — the [Mega Pokémon Gen 5 series on DeviantArt](https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon). Used per the artist's stated terms ("If used for projects or public works, please credit my Youtube channel" — crediting RetroNC's [YouTube channel](https://www.youtube.com/@RetroNC) in the in-app credits dialog).
 - Animated and HOME 3D sprite styles are derived works of official Game Freak / The Pokémon Company artwork.
 - Pokémon, Pokémon character names, and related imagery are trademarks of Nintendo / Game Freak / The Pokémon Company. This repo redistributes those community-extended sprite assets for the sole purpose of supporting the unofficial damage-calc.com fan calculator's offline-first mobile mode. No commercial use.
 
