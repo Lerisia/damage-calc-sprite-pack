@@ -23033,6 +23033,49 @@
         "https://www.smogon.com/forums/threads/sword-shield-sprite-project.3647722/"
       ],
       "permission_note": "Project OPs grant non-profit use with project or individual-artist credit. Per the relevant project license text, this artist consented to redistribution under the project credit by submitting work to the project; per-individual permission was not separately verified."
+    },
+    "RetroNC": {
+      "contributed_sprites": [
+        "barbaracle-mega",
+        "chandelure-mega",
+        "chesnaught-mega",
+        "chimecho-mega",
+        "clefable-mega",
+        "crabominable-mega",
+        "delphox-mega",
+        "dragalge-mega",
+        "drampa-mega",
+        "eelektross-mega",
+        "emboar-mega",
+        "excadrill-mega",
+        "falinks-mega",
+        "feraligatr-mega",
+        "floette-mega",
+        "froslass-mega",
+        "glimmora-mega",
+        "golurk-mega",
+        "greninja-mega",
+        "hawlucha-mega",
+        "malamar-mega",
+        "meganium-mega",
+        "meowstic-mega",
+        "pyroar-mega",
+        "raichu-megax",
+        "raichu-megay",
+        "scolipede-mega",
+        "scovillain-mega",
+        "scrafty-mega",
+        "skarmory-mega",
+        "staraptor-mega",
+        "starmie-mega"
+      ],
+      "projects": [
+        "RetroNC Gen 5 Pokémon Sprite series (DeviantArt)"
+      ],
+      "thread_urls": [
+        "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon"
+      ],
+      "permission_note": "Crediting per the artist's stated terms: \"If used for projects or public works, please credit my YouTube channel\" (@RetroNC)."
     }
   },
   "project_credits": {
@@ -23096,6 +23139,13 @@
         "Nintendo"
       ],
       "license_text": "No public license. Used as official game art for non-commercial reference inside a free fan tool. Same posture as the box icons."
+    },
+    "RetroNC Gen 5 Pokémon Sprite series (DeviantArt)": {
+      "url": "https://www.deviantart.com/retronc/gallery/99489665/mega-pokemon",
+      "lead_artists": [
+        "RetroNC"
+      ],
+      "license_text": "Used per the artist's stated terms on every relevant deviation: \"If used for projects or public works, please credit my YouTube channel.\" Crediting RetroNC and the YouTube channel @RetroNC (https://www.youtube.com/@RetroNC) in this dialog."
     }
   }
 }
