@@ -208,45 +208,25 @@ def base_species_name(name: str) -> Optional[str]:
 
 
 def collect_names_gen15() -> set[str]:
-    """gen1-5 base species + forms whose base species is in gen1-5.
+    """Every Pokémon in damage-calc's dex that has a BW-style sprite
+    on Showdown's gen5 CDN — gen1-5 Game-Freak originals AND the
+    X/Y Sprite Project community remakes of post-gen5 content
+    (Megas, Alolan/Hisuian/Galarian/Paldean forms, gen6+ base
+    species, Primal Reversion, …).
 
-    Forms whose underlying species (per [base_species_name]) is a
-    gen1-5 Pokémon get included — Deoxys formes (gen3 Deoxys), Rotom
-    appliances (gen4 Rotom), Wormadam cloaks (gen4 Wormadam),
-    Black/White Kyurem (gen5 Kyurem), Therian trio (gen5),
-    Darmanitan-Zen (gen5), Meloetta-Pirouette (gen5), etc.
+    The X/Y Sprite Project lead has granted permission to ship
+    their work as long as the credit page (assets/sprite_credits.json,
+    surfaced via the in-app About → Sprite Credits dialog) names
+    the project and its lead artists, which it does. Earlier
+    revisions of this function excluded those entries on a
+    conservative pending-permission read; now we just ship every
+    name the dex knows about.
 
-    Excludes post-gen5 regional variants and all Megas (the BW
-    sprites for these are X/Y Sprite Project community work and
-    aren't in scope until that group OKs redistribution)."""
-    base_species: set[str] = set()
-    for g in (1, 2, 3, 4, 5):
-        for entry in json.loads(
-                (DATA_DIR / f'gen{g}.json').read_text(encoding='utf-8')):
-            n = entry.get('name')
-            if n:
-                base_species.add(n)
-    names: set[str] = set(base_species)
-    forms_path = DATA_DIR / 'forms.json'
-    if not forms_path.exists():
-        return names
-    for entry in json.loads(forms_path.read_text(encoding='utf-8')):
-        n = entry.get('name')
-        if not n:
-            continue
-        # Skip post-gen5 regional variants outright.
-        if any(n.startswith(p + ' ') for p in REGIONAL.keys()):
-            continue
-        # Skip Primal Groudon/Kyogre — Primal Reversion was added in
-        # ORAS (gen6), so the BW sprite is X/Y Sprite Project work,
-        # not original BW art. (Mega works the same way, but Megas
-        # live in mega.json which we never load for this scope.)
-        if n.startswith('Primal '):
-            continue
-        base = base_species_name(n)
-        if base is not None and base in base_species:
-            names.add(n)
-    return names
+    The 'gen15' name is kept for the workflow's existing `STYLES`
+    entry, even though the scope is no longer literally gen1-5 only.
+    The BW package's name still reflects the visual style, which is
+    what matters to the user."""
+    return collect_names_all()
 
 
 def download(url: str, out: Path) -> bool:
