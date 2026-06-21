@@ -376,6 +376,39 @@ def download_champout(name: str, out: Path, shiny: bool = False) -> bool:
     return download(f'{_CHAMPOUT_BASE}/s{sid}{suffix}.png', out)
 
 
+def _looks_like_pixel_art(path: Path) -> bool:
+    """True when a PNG is genuine low-palette pixel art (real BW or
+    X/Y Sprite Project remake), False when it's an auto-downscaled
+    HOME render.
+
+    Showdown's gen5 CDN serves "best available" for every key — for
+    new Champions megas (Mega Staraptor, Mega Pyroar, the ZA-era
+    Raichu Mega X/Y, etc.) the X/Y Sprite Project hasn't shipped
+    pixel art yet, so the CDN returns a smooth downscaled HOME
+    render under the same gen5 path. We don't want those in the
+    BW pack — they look out of place next to genuine 16-colour
+    pixel sprites and the user would rather see a poké-ball than
+    a mismatched render.
+
+    Signal is unambiguous: real pixel art is palette-indexed
+    (PIL mode 'P') with ~15 unique colours, while downscaled
+    renders are RGBA with 1,000+ unique colours. The 64-colour
+    fallback covers any X/Y Project sprite that happens to be
+    saved as RGBA — none in today's sample, but cheap insurance."""
+    try:
+        from PIL import Image
+        img = Image.open(path)
+        if img.mode == 'P':
+            return True
+        # RGBA / RGB sample — count unique colours.
+        colors = len(set(img.convert('RGBA').getdata()))
+        return colors <= 64
+    except Exception:
+        # Unreadable → don't treat as pixel art; better to drop it
+        # than ship a broken sprite.
+        return False
+
+
 def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
     """Download every sprite for one style into work/<style>/, returning
     the count of successful files.
@@ -387,7 +420,14 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
     Showdown's main CDN doesn't (yet) have a kebab-named copy of.
     Champout sprites are PNG only, so when [ext] != 'png' the
     fallback is skipped (animated GIFs would need a different
-    source)."""
+    source).
+
+    For the bw style only, every PNG goes through
+    [_looks_like_pixel_art] after download — when Showdown's gen5
+    CDN serves an auto-downscaled HOME render for a key that
+    doesn't have a genuine X/Y Sprite Project remake yet, we drop
+    it rather than ship a smooth mismatched sprite among real
+    16-colour pixel art."""
     out_dir = WORK_DIR / style_key
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -405,14 +445,24 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
     # the champout fallback fetches the matching shiny `s{id}-s.png`.
     fetching_shiny = sd_dir.endswith('-shiny')
 
+    bw_pixel_gate = (style_key == 'bw')
+
     def fetch_one(name_key: tuple[str, str]) -> bool:
         n, k = name_key
         url = f'{base}/{k}.{ext}'
         dst = out_dir / f'{k}.{ext}'
         if download(url, dst):
+            if bw_pixel_gate and not _looks_like_pixel_art(dst):
+                # Auto-downscaled HOME render leaked through gen5 CDN —
+                # drop it so the slot stays a poké-ball instead of an
+                # ugly mismatch. Champout fallback would serve the same
+                # kind of smooth render, so skip that too.
+                dst.unlink()
+                return False
             return True
         # Fallback to champout (PNG only — animated GIFs aren't there).
-        if ext.lower() == 'png':
+        # Champout is HOME-render art too, so the BW pack never accepts it.
+        if ext.lower() == 'png' and not bw_pixel_gate:
             return download_champout(n, dst, shiny=fetching_shiny)
         return False
 
