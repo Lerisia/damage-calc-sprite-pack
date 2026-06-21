@@ -456,13 +456,22 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
     # the champout fallback fetches the matching shiny `s{id}-s.png`.
     fetching_shiny = sd_dir.endswith('-shiny')
 
-    bw_pixel_gate = (style_key == 'bw')
+    # Shiny calls pass `style_key='bw/shiny'` (work dir nesting trick
+    # — see main()), so split off the base for the per-style decisions
+    # below. Without this split, the BW pixel gate silently skipped
+    # the shiny pass and let auto-downscaled HOME renders through
+    # for every key the X/Y Sprite Project hasn't shipped a shiny
+    # palette PNG for (RetroNC's ZA Megas were the visible symptom —
+    # regular pixel sprite shown, shiny rendered as a smooth HOME
+    # downscale).
+    base_style = style_key.split('/')[0]
+    bw_pixel_gate = (base_style == 'bw')
 
-    # manual_sprites/<style>/ (and /<style>-shiny/ for shiny passes)
-    # holds artist-contributed overrides. Files here pre-empt the CDN
-    # entirely and skip the pixel-art gate — they were curated by
-    # hand, so we trust them.
-    manual_subdir = f'{style_key}-shiny' if fetching_shiny else style_key
+    # manual_sprites/<base_style>/ (and /<base_style>-shiny/ for shiny
+    # passes) holds artist-contributed overrides. Files here pre-empt
+    # the CDN entirely and skip the pixel-art gate — they were curated
+    # by hand, so we trust them.
+    manual_subdir = f'{base_style}-shiny' if fetching_shiny else base_style
     manual_dir = REPO_ROOT / 'manual_sprites' / manual_subdir
 
     def fetch_one(name_key: tuple[str, str]) -> bool:
