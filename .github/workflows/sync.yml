@@ -39,6 +39,12 @@ jobs:
       - name: Build box icons (gen1-7 base species only)
         run: python3 build_icons.py
 
+      # Held-item icons (24x24). Bundled under items/ inside each
+      # style zip, same as box icons — the app marks held items in
+      # list views (speed tier Choice Scarf lines).
+      - name: Build held-item icons
+        run: python3 build_item_icons.py
+
       - name: Build sprite packs (each style + bundled icons)
         run: python3 build_packs.py
 
@@ -55,10 +61,11 @@ jobs:
       - name: Stage extracted sprites for jsDelivr
         run: |
           rm -rf sprites
-          mkdir -p sprites/bw sprites/dex sprites/icons
+          mkdir -p sprites/bw sprites/dex sprites/icons sprites/items
           cp -r work/bw/. sprites/bw/
           cp -r work/dex/. sprites/dex/
           cp -r work/icons/. sprites/icons/
+          cp -r work/items/. sprites/items/
           # Manifest so future tooling can tell which files belong
           # to which pack at a glance.
           {
@@ -66,6 +73,7 @@ jobs:
             echo "bw: $(ls sprites/bw | wc -l) files"
             echo "dex: $(ls sprites/dex | wc -l) files"
             echo "icons: $(ls sprites/icons | wc -l) files"
+            echo "items: $(ls sprites/items | wc -l) files"
           } > sprites/MANIFEST.txt
 
       - name: Commit sprite tree if changed

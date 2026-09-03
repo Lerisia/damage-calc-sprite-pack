@@ -569,6 +569,7 @@ def zip_style(style_key: str) -> Path:
     shiny_src = src / 'shiny'
     icons_src = WORK_DIR / 'icons'
     trainers_src = WORK_DIR / 'trainers'
+    items_src = WORK_DIR / 'items'
     dst = PACKS_DIR / f'{style_key}.zip'
     PACKS_DIR.mkdir(exist_ok=True)
     pack_version = read_pack_version()
@@ -594,6 +595,12 @@ def zip_style(style_key: str) -> Path:
             for f in sorted(trainers_src.iterdir()):
                 if f.is_file():
                     zf.write(f, arcname=f'trainers/{f.name}')
+        # Held-item icons (24×24). Shared across styles like the box
+        # icons — see build_item_icons.py.
+        if items_src.exists():
+            for f in sorted(items_src.iterdir()):
+                if f.is_file():
+                    zf.write(f, arcname=f'items/{f.name}')
     return dst
 
 
