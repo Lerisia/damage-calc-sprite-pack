@@ -20,6 +20,8 @@ import re
 import shutil
 import subprocess
 import sys
+import time
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
@@ -233,151 +235,194 @@ def collect_names_gen15() -> set[str]:
     return collect_names_all()
 
 
-def download(url: str, out: Path) -> bool:
-    """HEAD-then-GET so 404s don't leave empty files lying around."""
-    r = subprocess.run(
-        ['curl', '-sS', '-o', str(out), '-w', '%{http_code}',
-         '--max-time', '20', url],
-        capture_output=True, text=True,
-    )
-    code = (r.stdout or '').strip()[-3:]
-    if code != '200' or not out.exists() or out.stat().st_size < 100:
+def download(url: str, out: Path, retries: int = 3) -> bool:
+    """GET with retries. A 404 is final; anything else (429 throttling,
+    5xx, timeouts) is retried with a short backoff. The 2026-09-12 pack
+    shipped only 1023/1240 dex renders because throttled fetches were
+    treated like 404s and silently skipped."""
+    for attempt in range(retries):
+        r = subprocess.run(
+            ['curl', '-sS', '-o', str(out), '-w', '%{http_code}',
+             '--max-time', '30', url],
+            capture_output=True, text=True,
+        )
+        code = (r.stdout or '').strip()[-3:]
+        if code == '200' and out.exists() and out.stat().st_size >= 100:
+            return True
         if out.exists():
             out.unlink()
-        return False
-    return True
+        if code == '404':
+            return False
+        time.sleep(1.5 * (attempt + 1))
+    return False
 
 
 # ── champout fallback ────────────────────────────────────────────────
 # Showdown's main CDN (`play.pokemonshowdown.com/sprites/...`) doesn't
-# carry Pokémon Champions' newly added Mega forms (Mega Raichu X/Y,
-# Mega Garchomp Z, the M-B re-enabled megas Showdown didn't have
-# 3D models for yet, etc.). The smogon/sprites repo DOES — under
-# `src/champions/s{id}.png`, with `id = (dex << 5) | forme_idx` and
-# `forme_idx` taken from the species' `formeOrder` in
-# `pokemon-showdown/data/pokedex.ts`. Same encoding both styles use,
-# so one fallback covers BW and dex.
+# carry Pokémon Champions' Mega forms (Mega Raichu X/Y, Mega Garchomp Z,
+# the M-B/M-C re-enabled megas, …). The smogon/sprites repo DOES, under
+# `src/champions/s<species>[-o<form>][-s].png`: `sabsol-omega.png`,
+# `sabsol-omega_z.png`, `scharizard-omega_x.png`, `sraichu-oalola.png`,
+# `srotom-oheat.png`, `stauros-opaldea_aqua.png`, `stoxtricity-olow_key.png`,
+# `sindeedee-of.png`, `-s` for shiny. (An earlier `s<id>` scheme is gone —
+# every fallback 404'd for a while without anyone noticing.) The
+# directory listing is fetched once so we only request files that exist.
 
-_POKEDEX_TS_URL = ('https://raw.githubusercontent.com/smogon/'
-                   'pokemon-showdown/master/data/pokedex.ts')
-_pokedex_cache: dict[str, tuple[int, list[str]]] | None = None
-
-
-def _load_showdown_pokedex() -> dict[str, tuple[int, list[str]]]:
-    """Return {forme_name_lower: (dex, [formeOrder...])}. Builds once
-    from Showdown's pokedex.ts so per-name champout lookups are O(1).
-    Forme entries (e.g. `raichumegax`) carry a `baseSpecies` pointer;
-    we resolve them to the base species' formeOrder so the champout
-    index lookup gives the right `(dex << 5) | idx`."""
-    global _pokedex_cache
-    if _pokedex_cache is not None:
-        return _pokedex_cache
-    import urllib.request
-    with urllib.request.urlopen(_POKEDEX_TS_URL, timeout=30) as resp:
-        text = resp.read().decode('utf-8')
-
-    # Pass 1: collect every block (base + formes), keyed by display name.
-    blocks: dict[str, dict] = {}  # name_lower -> {dex, baseSpecies, formeOrder}
-    for m in re.finditer(
-        r'^\t([a-z0-9]+):\s*\{(.*?)^\t\},?$', text, re.DOTALL | re.MULTILINE,
-    ):
-        body = m.group(2)
-        name_m = re.search(r'name:\s*"([^"]+)"', body)
-        num_m = re.search(r'num:\s*(-?\d+)', body)
-        if not name_m or not num_m:
-            continue
-        base_m = re.search(r'baseSpecies:\s*"([^"]+)"', body)
-        fo_m = re.search(r'formeOrder:\s*\[([^\]]+)\]', body)
-        blocks[name_m.group(1).lower()] = {
-            'dex': int(num_m.group(1)),
-            'base': (base_m.group(1).lower() if base_m
-                     else name_m.group(1).lower()),
-            'formes': (
-                [s.strip().strip('"') for s in fo_m.group(1).split(',')
-                 if s.strip()]
-                if fo_m else [name_m.group(1)]
-            ),
-        }
-
-    # Pass 2: for each block, resolve its formeOrder by walking back to
-    # the base entry (which is the one that owns the formeOrder list).
-    out: dict[str, tuple[int, list[str]]] = {}
-    for name, info in blocks.items():
-        base_block = blocks.get(info['base'], info)
-        formes = base_block['formes']
-        # Dex# comes from the base species — all formes share it.
-        out[name] = (base_block['dex'], formes)
-
-    _pokedex_cache = out
-    return out
+_CHAMPOUT_BASE = ('https://raw.githubusercontent.com/smogon/sprites/'
+                  'master/src/champions')
+_CHAMPOUT_LIST = 'https://api.github.com/repos/smogon/sprites/contents/src/champions'
+_champout_files: Optional[set[str]] = None
 
 
-def _to_showdown_forme(name: str) -> str:
-    """Map damage-calc's display name to Showdown's pokedex.ts forme
-    name. Examples: 'Mega Raichu X' → 'Raichu-Mega-X', 'Heat Rotom'
-    → 'Rotom-Heat', 'Alolan Ninetales' → 'Ninetales-Alola'."""
+def _load_champout_files() -> set[str]:
+    global _champout_files
+    if _champout_files is not None:
+        return _champout_files
+    try:
+        req = urllib.request.Request(_CHAMPOUT_LIST, headers={'User-Agent': 'damage-calc-sprite-pack'})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            _champout_files = {e['name'] for e in json.load(resp)}
+    except Exception as e:  # listing is an optimisation; fall back to blind GETs
+        print(f'  WARN champout listing unavailable ({e}); trying blind fetches')
+        _champout_files = set()
+    return _champout_files
+
+
+def champout_key(name: str) -> Optional[str]:
+    """Map damage-calc's display name to champout's file stem (without
+    the leading 's' and the extension), or None when the name is a form
+    champout can't have."""
     n = name.strip()
+    sp = lambda x: _strip_alnum(x)
     m = re.fullmatch(r'Mega (\w+) ([XYZ])', n)
-    if m: return f'{m.group(1)}-Mega-{m.group(2)}'
+    if m:
+        return f'{sp(m.group(1))}-omega_{m.group(2).lower()}'
     m = re.fullmatch(r'Mega (\w+)', n)
-    if m: return f'{m.group(1)}-Mega'
-    m = re.fullmatch(r'Primal (\w+)', n)
-    if m: return f'{m.group(1)}-Primal'
+    if m:
+        # Meowstic's Mega is per-gender in champout; our dex has one entry.
+        if m.group(1) == 'Meowstic':
+            return 'meowstic-om_mega'
+        return f'{sp(m.group(1))}-omega'
+    if n.startswith('Primal '):
+        return None
     m = re.fullmatch(r'(Heat|Wash|Frost|Fan|Mow) Rotom', n)
-    if m: return f'Rotom-{m.group(1)}'
-    regional_to_sd = {
-        'Alolan': 'Alola',
-        'Hisuian': 'Hisui',
-        'Galarian': 'Galar',
-        'Paldean': 'Paldea',
-    }
-    for pre, suf in regional_to_sd.items():
+    if m:
+        return f'rotom-o{m.group(1).lower()}'
+    for pre, suf in REGIONAL.items():
         if n.startswith(pre + ' '):
             rest = n[len(pre) + 1:]
             nested = re.fullmatch(r'(\w+) \(([^)]+)\)', rest)
             if nested:
-                return f'{nested.group(1)}-{suf}-{nested.group(2).replace(" ", "")}'
-            return f'{rest}-{suf}'
-    # "Pokemon (Form)" → "Pokemon-Form" (e.g. "Gourgeist (Large Size)")
-    m = re.fullmatch(r'([\w\.\-\' ]+?) \(([^)]+)\)', n)
+                words = [w for w in nested.group(2).split() if w not in NOISE_FORM_WORDS and w != 'Breed']
+                return f'{sp(nested.group(1))}-o{suf}_' + '_'.join(w.lower() for w in words)
+            return f'{sp(rest)}-o{suf}'
+    m = re.fullmatch(r"(.+?) \(([^)]+)\)", n)
     if m:
-        species = m.group(1).strip()
+        species = sp(m.group(1))
         inner = m.group(2)
-        # Strip noise words that the showdown forme names omit
-        meaningful = [w for w in inner.split() if w not in NOISE_FORM_WORDS]
-        slug = ''.join(meaningful or [inner])
-        return f'{species}-{slug}'
-    return n
-
-
-def champout_id(name: str) -> Optional[int]:
-    """Return the `src/champions/s{id}` integer for [name], or None
-    if the species isn't in Showdown's pokedex (so no champions
-    sprite candidate exists)."""
-    forme = _to_showdown_forme(name).lower()
-    pd = _load_showdown_pokedex()
-    entry = pd.get(forme)
-    if entry is None:
-        return None
-    dex, formes = entry
-    formes_lower = [f.lower() for f in formes]
-    if forme not in formes_lower:
-        return None
-    return (dex << 5) | formes_lower.index(forme)
-
-
-_CHAMPOUT_BASE = ('https://raw.githubusercontent.com/smogon/sprites/'
-                  'master/src/champions')
+        if inner == 'Female':
+            return f'{species}-of'
+        if inner == 'Male':
+            return species
+        words = [w for w in inner.split() if w not in NOISE_FORM_WORDS]
+        return f'{species}-o' + '_'.join(w.lower() for w in (words or inner.split()))
+    return sp(n)
 
 
 def download_champout(name: str, out: Path, shiny: bool = False) -> bool:
-    """Try the champout sprite (raw.github smogon/sprites src/champions
-    folder) for [name]. No-op when champout doesn't have this species."""
-    sid = champout_id(name)
-    if sid is None:
+    """Try champout for [name]; no-op when it has no such file."""
+    key = champout_key(name)
+    if key is None:
         return False
-    suffix = '-s' if shiny else ''
-    return download(f'{_CHAMPOUT_BASE}/s{sid}{suffix}.png', out)
+    fname = f's{key}{"-s" if shiny else ""}.png'
+    files = _load_champout_files()
+    if files and fname not in files:
+        return False
+    return download(f'{_CHAMPOUT_BASE}/{fname}', out)
+
+
+# ── PokeAPI HOME fallback (dex style only) ───────────────────────────
+# Showdown's dex/ CDN stops short of a lot of Gen 8/9 content (Zacian,
+# Urshifu, Terapagos, the Galar/Hisui regionals, Crowned/Origin forms,
+# ...). PokeAPI/sprites mirrors the official HOME renders for all of
+# them by PokeAPI id at sprites/pokemon/other/home/<id>.png (shiny under
+# home/shiny/). Base species map by dex number; forms go through
+# PokeAPI's pokemon list, which mostly shares Showdown's slugs.
+
+_POKEAPI_LIST = 'https://pokeapi.co/api/v2/pokemon?limit=2000'
+_POKEAPI_HOME = ('https://raw.githubusercontent.com/PokeAPI/sprites/master/'
+                 'sprites/pokemon/other/home')
+_pokeapi_ids: Optional[dict[str, int]] = None
+# our sprite key → PokeAPI slug where they differ
+POKEAPI_KEY_FIX = {
+    'mrmime-galar': 'mr-mime-galar', 'mrmime': 'mr-mime', 'mrrime': 'mr-rime',
+    'darmanitan-galar': 'darmanitan-galar-standard',
+    'darmanitan-galarzen': 'darmanitan-galar-zen',
+    'urshifu': 'urshifu-single-strike', 'urshifu-rapidstrike': 'urshifu-rapid-strike',
+    'zygarde': 'zygarde-50', 'toxtricity': 'toxtricity-amped',
+    'tapukoko': 'tapu-koko', 'tapulele': 'tapu-lele', 'tapubulu': 'tapu-bulu', 'tapufini': 'tapu-fini',
+    'slitherwing': 'slither-wing', 'tinglu': 'ting-lu', 'chienpao': 'chien-pao',
+    'wochien': 'wo-chien', 'chiyu': 'chi-yu', 'gougingfire': 'gouging-fire',
+    'ragingbolt': 'raging-bolt', 'ironboulder': 'iron-boulder', 'ironcrown': 'iron-crown',
+    'ironvaliant': 'iron-valiant', 'ironhands': 'iron-hands', 'ironleaves': 'iron-leaves',
+    'ironmoth': 'iron-moth', 'ironjugulis': 'iron-jugulis', 'ironthorns': 'iron-thorns',
+    'ironbundle': 'iron-bundle', 'irontreads': 'iron-treads', 'walkingwake': 'walking-wake',
+    'greattusk': 'great-tusk', 'screamtail': 'scream-tail', 'brutebonnet': 'brute-bonnet',
+    'fluttermane': 'flutter-mane', 'slitherwing': 'slither-wing', 'sandyshocks': 'sandy-shocks',
+    'roaringmoon': 'roaring-moon', 'typenull': 'type-null', 'jangmoo': 'jangmo-o',
+    'hakamoo': 'hakamo-o', 'kommoo': 'kommo-o', 'porygonz': 'porygon-z', 'hooh': 'ho-oh',
+    'nidoranf': 'nidoran-f', 'nidoranm': 'nidoran-m', 'flabebe': 'flabebe',
+}
+
+
+def _load_pokeapi_ids() -> dict[str, int]:
+    global _pokeapi_ids
+    if _pokeapi_ids is not None:
+        return _pokeapi_ids
+    try:
+        req = urllib.request.Request(_POKEAPI_LIST, headers={'User-Agent': 'damage-calc-sprite-pack'})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            results = json.load(resp)['results']
+        _pokeapi_ids = {r['name']: int(r['url'].rstrip('/').rsplit('/', 1)[1]) for r in results}
+    except Exception as e:
+        print(f'  WARN PokeAPI list unavailable ({e}); HOME fallback limited to base species')
+        _pokeapi_ids = {}
+    return _pokeapi_ids
+
+
+_dex_numbers: Optional[dict[str, int]] = None
+
+
+def _dex_number(name: str) -> Optional[int]:
+    """National dex number for a *base* species name (forms return None:
+    their HOME art lives under a PokeAPI form id, not the dex number)."""
+    global _dex_numbers
+    if _dex_numbers is None:
+        _dex_numbers = {}
+        for p in sorted(DATA_DIR.glob('*.json')):
+            for e in json.loads(p.read_text(encoding='utf-8')):
+                if e.get('name') and e.get('dexNumber'):
+                    _dex_numbers[e['name']] = int(e['dexNumber'])
+    if base_species_name(name) is not None:
+        return None
+    return _dex_numbers.get(name)
+
+
+def pokeapi_id(name: str) -> Optional[int]:
+    key = sprite_key(name)
+    ids = _load_pokeapi_ids()
+    for cand in (POKEAPI_KEY_FIX.get(key), key):
+        if cand and cand in ids:
+            return ids[cand]
+    return _dex_number(name)
+
+
+def download_pokeapi_home(name: str, out: Path, shiny: bool = False) -> bool:
+    pid = pokeapi_id(name)
+    if pid is None:
+        return False
+    sub = 'shiny/' if shiny else ''
+    return download(f'{_POKEAPI_HOME}/{sub}{pid}.png', out)
 
 
 def _looks_like_pixel_art(path: Path) -> bool:
@@ -491,13 +536,19 @@ def build_style(style_key: str, sd_dir: str, ext: str, names: list[str]) -> int:
                 dst.unlink()
                 return False
             return True
-        # Fallback to champout (PNG only — animated GIFs aren't there).
-        # Champout is HOME-render art too, so the BW pack never accepts it.
+        # Fallbacks (PNG only — animated GIFs aren't there). Both are
+        # HOME-render art, so the BW pack never accepts them:
+        #   1. champout (Champions Megas and Champions-roster forms)
+        #   2. PokeAPI's HOME mirror (Gen 8/9 species, regionals, …)
         if ext.lower() == 'png' and not bw_pixel_gate:
-            return download_champout(n, dst, shiny=fetching_shiny)
+            if download_champout(n, dst, shiny=fetching_shiny):
+                return True
+            return download_pokeapi_home(n, dst, shiny=fetching_shiny)
         return False
 
-    with ThreadPoolExecutor(max_workers=24) as ex:
+    # 6 workers: Showdown's CDN throttles heavier bursts, and download()
+    # now retries instead of skipping — see its docstring.
+    with ThreadPoolExecutor(max_workers=6) as ex:
         for got in ex.map(fetch_one, pairs):
             if got:
                 ok += 1
