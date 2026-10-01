@@ -6,7 +6,7 @@ Pre-built Pokémon sprite packs for [damage-calc.com](https://damage-calc.com)'s
 - **dex.zip** — HOME 3D PNG sprites at the top level (full Pokémon coverage, derived from official HOME assets) plus the same `icons/` subdirectory.
 - ~~ani.zip~~ — Animated GIF pack intentionally not published yet, same community-attribution reason as bw's exclusions.
 
-Held-item icons (24×30… actually 24×24, from Showdown's `itemicons/`) ride along in an `items/` subdirectory of each style pack. Coverage is partial — about 230 of the calc's ~530 items resolve; Mega Stones, Z-Crystals, Silvally memories and the Champions-original candies have no standalone icon upstream, and callers fall back to a text label.
+Held-item icons (24×24, from Showdown) ride along in an `items/` subdirectory of each style pack. About 230 items have a standalone file under `itemicons/`; the rest — Mega Stones, Z-Crystals, Silvally memories, most gen 8–9 items — are cut out of Showdown's `itemicons-sheet.png` by the `spritenum` in pokemon-showdown's `data/items.ts`. That covers every held item the calc offers except a handful Showdown doesn't know (the Let's Go candies and similar non-held entries), for which callers show a placeholder.
 
 Box icons are bundled inside each style pack rather than published separately, so the user only manages one download per style — the app's import flow extracts both groups in one go. Icon scope is **gen 1–7 base species only** (num 1–809). 40×30 icons are the official Sun/Moon-era Game Freak style; gen8 onwards the game switched to 68×56 and Showdown's 40×30 icons for gen8+ Pokémon are drawn by [msikma/pokesprite](https://github.com/msikma/pokesprite) and similar community projects, so we exclude them.
 
